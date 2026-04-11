@@ -1,0 +1,11 @@
+[     775ms] [WARNING] [DEPRECATED] atomFamily is deprecated and will be removed in v3. Please use the `jotai-family` package instead: https://github.com/jotaijs/jotai-family @ https://railway.com/_next/static/chunks/pages/_app-a57f61fa4a7b68b6.js:3
+[     790ms] [WARNING] In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app. @ https://railway.com/_next/static/chunks/pages/_app-a57f61fa4a7b68b6.js:7
+[    1424ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 100%". @ https://railway.com/_next/static/chunks/framework-de9806e98e3b3323.js:0
+[    1424ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 100%". @ https://railway.com/_next/static/chunks/framework-de9806e98e3b3323.js:0
+[    1424ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 100%". @ https://railway.com/_next/static/chunks/framework-de9806e98e3b3323.js:0
+[    1424ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 100%". @ https://railway.com/_next/static/chunks/framework-de9806e98e3b3323.js:0
+[    1424ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 100%". @ https://railway.com/_next/static/chunks/framework-de9806e98e3b3323.js:0
+[    1424ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 100%". @ https://railway.com/_next/static/chunks/framework-de9806e98e3b3323.js:0
+[    1424ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 100%". @ https://railway.com/_next/static/chunks/framework-de9806e98e3b3323.js:0
+[    1424ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 100%". @ https://railway.com/_next/static/chunks/framework-de9806e98e3b3323.js:0
+[    1424ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 100%". @ https://railway.com/_next/static/chunks/framework-de9806e98e3b3323.js:0

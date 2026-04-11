@@ -1,0 +1,12 @@
+[     662ms] ReferenceError: fbq is not defined
+    at <anonymous>:1:1
+    at https://www.googletagmanager.com/gtm.js?id=GTM-58PRD29:718:429
+    at lR (https://www.googletagmanager.com/gtm.js?id=GTM-58PRD29:720:31)
+    at Od.kR (https://www.googletagmanager.com/gtm.js?id=GTM-58PRD29:717:92)
+    at Od.<anonymous> (https://www.googletagmanager.com/gtm.js?id=GTM-58PRD29:265:187)
+    at k.apply (https://www.googletagmanager.com/gtm.js?id=GTM-58PRD29:196:466)
+    at kb (https://www.googletagmanager.com/gtm.js?id=GTM-58PRD29:159:209)
+    at jb (https://www.googletagmanager.com/gtm.js?id=GTM-58PRD29:158:527)
+    at Od.<anonymous> (https://www.googletagmanager.com/gtm.js?id=GTM-58PRD29:220:473)
+    at k.apply (https://www.googletagmanager.com/gtm.js?id=GTM-58PRD29:196:466)
+[    1473ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://buffer.com/pricing:0

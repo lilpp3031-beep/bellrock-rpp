@@ -1,0 +1,29 @@
+{
+  "name": "Amazon Design Templates v1",
+  "version": "1.0.0",
+  "totalSamples": 3,
+  "categories": [
+    "beauty",
+    "tools",
+    "furniture"
+  ],
+  "colors": {
+    "primary": [
+      "#FF9900"
+    ],
+    "secondary": [
+      "#146EB4"
+    ]
+  },
+  "layouts": [
+    "grid-center"
+  ],
+  "typography": {
+    "headingSizes": [
+      "24px"
+    ]
+  },
+  "imagery": [
+    "product-showcase"
+  ]
+}

@@ -1,0 +1,85 @@
+- generic [active] [ref=e1]:
+  - list:  
+  - generic [ref=e3]:
+    - button "" [ref=e4] [cursor=pointer]
+    - generic [ref=e7]:
+      - text: 楽天会員ログイン画面が新しくなりました。
+      - link "詳細 >" [ref=e8] [cursor=pointer]:
+        - /url: https://ichiba.faq.rakuten.net/detail/000030356
+      - text: 旧ログイン画面の提供は、2026年03月18日をもって終了いたしました。
+  - generic [ref=e9]:
+    - banner [ref=e10]:
+      - generic [ref=e11]:
+        - link "楽天ビジネスログイン" [ref=e12] [cursor=pointer]:
+          - /url: https://glogin.rms.rakuten.co.jp/2fa/?sp_id=1
+        - link "ヘルプ" [ref=e13] [cursor=pointer]:
+          - /url: https://glogin.rms.rakuten.co.jp/help/29_01.html
+      - heading " RMS Rakuten Merchant Server" [level=1] [ref=e14]:
+        - generic [ref=e15]:
+          - text: 
+          - generic: RMS Rakuten Merchant Server
+      - strong [ref=e17]: 新RMSログイン画面をご利用中です。
+      - paragraph [ref=e18]: RMSは楽天市場の店舗運営システムです。
+    - main [ref=e19]:
+      - generic [ref=e20]:
+        - heading "RMSにログインする" [level=2] [ref=e21]
+        - generic [ref=e22]:
+          - heading "R-Login IDの認証（共通ID）" [level=3] [ref=e23]
+          - generic [ref=e24]:
+            - paragraph [ref=e25]:
+              - generic [ref=e26]:
+                - text: R-Login ID
+                - link "ヘルプ" [ref=e27] [cursor=pointer]:
+                  - /url: javascript:void(0);
+                  - generic [ref=e28]: 
+                  - generic: ヘルプ
+              - generic [ref=e29]:
+                - textbox "R-Login ID" [ref=e30]:
+                  - /placeholder: R-Login IDを入力
+                  - text: lilpp3031
+                - text: 
+            - paragraph [ref=e31]:
+              - generic [ref=e32]:
+                - text: R-Login パスワード
+                - link "ヘルプ" [ref=e33] [cursor=pointer]:
+                  - /url: javascript:void(0);
+                  - generic [ref=e34]: 
+                  - generic: ヘルプ
+              - generic [ref=e35]:
+                - textbox "R-Login パスワード" [ref=e36]:
+                  - /placeholder: パスワードを入力
+                  - text: hikaru0331
+                - text: 
+            - paragraph [ref=e37]:
+              - generic [ref=e38] [cursor=pointer]:
+                - checkbox " R-Login IDを保存する" [ref=e39]
+                - text:  R-Login IDを保存する
+            - paragraph [ref=e40]:
+              - button "楽天会員ログインへ" [ref=e41] [cursor=pointer]
+            - paragraph [ref=e42]:
+              - link "R-login IDを忘れた場合 >" [ref=e43] [cursor=pointer]:
+                - /url: https://glogin.rms.rakuten.co.jp/?module=BizRemind&action=BizRemindAccountIdInput
+            - paragraph [ref=e44]:
+              - link "R-login パスワードを忘れた場合 >" [ref=e45] [cursor=pointer]:
+                - /url: https://glogin.rms.rakuten.co.jp/?module=BizRemind&action=BizRemindAuthInput&remind_kind=1
+        - list [ref=e49]:
+          - listitem [ref=e50]:
+            - text: ※ RMSの利用者の管理、R-Loginパスワードは
+            - link "R-Login" [ref=e51] [cursor=pointer]:
+              - /url: https://glogin.rms.rakuten.co.jp/?sp_id=0
+            - img [ref=e52]
+            - text: から変更することができます。
+          - listitem [ref=e55]: ※ このページはRMSログイントップです。お気に入り登録される事をおすすめします。
+  - contentinfo [ref=e56]:
+    - list [ref=e57]:
+      - listitem [ref=e58]:
+        - link "R-Login利用規約" [ref=e59] [cursor=pointer]:
+          - /url: https://glogin.rms.rakuten.co.jp/?module=BizRule&action=BizRuleDisp
+      - listitem [ref=e60]:
+        - link "個人情報保護方針" [ref=e61] [cursor=pointer]:
+          - /url: https://privacy.rakuten.co.jp/
+    - paragraph [ref=e62]: © Rakuten Group, Inc.
+  - link "閉じる" [ref=e65] [cursor=pointer]:
+    - /url: javascript:void(0);
+    - generic [ref=e66]: 
+    - generic: 閉じる

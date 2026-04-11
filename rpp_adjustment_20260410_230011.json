@@ -1,0 +1,287 @@
+{
+  "executedAt": "2026-04-10T23:00:11.212117",
+  "testMode": true,
+  "results": [
+    {
+      "itemMngId": "compass1772707623",
+      "keyword": "パソコン周辺機器",
+      "rank": 4,
+      "oldCpc": 40,
+      "newCpc": 40,
+      "recCpc": 42,
+      "changed": false,
+      "verdict": "PR4位（目標内）→ 変更なし"
+    },
+    {
+      "itemMngId": "compass1772707623",
+      "keyword": "マウス 手首",
+      "rank": null,
+      "oldCpc": 60,
+      "newCpc": 70,
+      "recCpc": 435,
+      "changed": true,
+      "verdict": "圏外 → 70円へ増額"
+    },
+    {
+      "itemMngId": "compass1772707623",
+      "keyword": "パームレスト",
+      "rank": 2,
+      "oldCpc": 60,
+      "newCpc": 55,
+      "recCpc": 60,
+      "changed": true,
+      "verdict": "PR2位（上位すぎ）→ 55円へ減額"
+    },
+    {
+      "itemMngId": "compass1770694157",
+      "keyword": "シートクッション トラック",
+      "rank": null,
+      "oldCpc": 60,
+      "newCpc": 70,
+      "recCpc": 371,
+      "changed": true,
+      "verdict": "圏外 → 70円へ増額"
+    },
+    {
+      "itemMngId": "compass1770694157",
+      "keyword": "シートクッション 長距離",
+      "rank": null,
+      "oldCpc": 60,
+      "newCpc": 70,
+      "recCpc": 185,
+      "changed": true,
+      "verdict": "圏外 → 70円へ増額"
+    },
+    {
+      "itemMngId": "compass1770694157",
+      "keyword": "車 シートクッション",
+      "rank": null,
+      "oldCpc": 60,
+      "newCpc": 70,
+      "recCpc": 413,
+      "changed": true,
+      "verdict": "圏外 → 70円へ増額"
+    },
+    {
+      "itemMngId": "compass1770694157",
+      "keyword": "長距離運転 クッション",
+      "rank": null,
+      "oldCpc": 60,
+      "newCpc": 70,
+      "recCpc": 261,
+      "changed": true,
+      "verdict": "圏外 → 70円へ増額"
+    },
+    {
+      "itemMngId": "compass1772335069",
+      "keyword": "スマホ ロック",
+      "rank": 2,
+      "oldCpc": 45,
+      "newCpc": 40,
+      "recCpc": 45,
+      "changed": true,
+      "verdict": "PR2位（上位すぎ）→ 40円へ減額"
+    },
+    {
+      "itemMngId": "compass1772335069",
+      "keyword": "スマホロックケース",
+      "rank": 2,
+      "oldCpc": 60,
+      "newCpc": 55,
+      "recCpc": 60,
+      "changed": true,
+      "verdict": "PR2位（上位すぎ）→ 55円へ減額"
+    },
+    {
+      "itemMngId": "compass1772335069",
+      "keyword": "スマホ依存症",
+      "rank": 1,
+      "oldCpc": 60,
+      "newCpc": 55,
+      "recCpc": 15,
+      "changed": true,
+      "verdict": "PR1位（上位すぎ）→ 55円へ減額"
+    },
+    {
+      "itemMngId": "compass1772335069",
+      "keyword": "スマホ依存症 対策",
+      "rank": 2,
+      "oldCpc": 40,
+      "newCpc": 40,
+      "recCpc": 40,
+      "changed": false,
+      "verdict": "PR2位（上位すぎ）→ 40円へ減額"
+    },
+    {
+      "itemMngId": "compass1759722244",
+      "keyword": "壁保護シート",
+      "rank": 4,
+      "oldCpc": 40,
+      "newCpc": 40,
+      "recCpc": 67,
+      "changed": false,
+      "verdict": "PR4位（目標内）→ 変更なし"
+    },
+    {
+      "itemMngId": "compass1759722244",
+      "keyword": "爪とぎ防止シート",
+      "rank": null,
+      "oldCpc": 40,
+      "newCpc": 50,
+      "recCpc": 86,
+      "changed": true,
+      "verdict": "圏外 → 50円へ増額"
+    },
+    {
+      "itemMngId": "compass1759722244",
+      "keyword": "猫 爪研ぎ防止シート",
+      "rank": 4,
+      "oldCpc": 40,
+      "newCpc": 40,
+      "recCpc": 69,
+      "changed": false,
+      "verdict": "PR4位（目標内）→ 変更なし"
+    },
+    {
+      "itemMngId": "compass1759722244",
+      "keyword": "猫 爪とぎ防止",
+      "rank": 4,
+      "oldCpc": 42,
+      "newCpc": 42,
+      "recCpc": 46,
+      "changed": false,
+      "verdict": "PR4位（目標内）→ 変更なし"
+    },
+    {
+      "itemMngId": "compass1759722244",
+      "keyword": "猫 壁紙保護シート",
+      "rank": 3,
+      "oldCpc": 44,
+      "newCpc": 40,
+      "recCpc": 44,
+      "changed": true,
+      "verdict": "PR3位（上位すぎ）→ 40円へ減額"
+    },
+    {
+      "itemMngId": "compass1768890284",
+      "keyword": "多肉植物 ライト おしゃれ",
+      "rank": 1,
+      "oldCpc": 40,
+      "newCpc": 40,
+      "recCpc": 22,
+      "changed": false,
+      "verdict": "PR1位（上位すぎ）→ 40円へ減額"
+    },
+    {
+      "itemMngId": "compass1768890284",
+      "keyword": "植物 ライト led",
+      "rank": 3,
+      "oldCpc": 40,
+      "newCpc": 40,
+      "recCpc": 40,
+      "changed": false,
+      "verdict": "PR3位（上位すぎ）→ 40円へ減額"
+    },
+    {
+      "itemMngId": "compass1768890284",
+      "keyword": "植物用ライト",
+      "rank": null,
+      "oldCpc": 50,
+      "newCpc": 60,
+      "recCpc": 70,
+      "changed": true,
+      "verdict": "圏外 → 60円へ増額"
+    },
+    {
+      "itemMngId": "compass1768890284",
+      "keyword": "植物育成ライト",
+      "rank": null,
+      "oldCpc": 60,
+      "newCpc": 70,
+      "recCpc": 126,
+      "changed": true,
+      "verdict": "圏外 → 70円へ増額"
+    },
+    {
+      "itemMngId": "compass1768890284",
+      "keyword": "植物育成ライト クリップ タイマー",
+      "rank": 2,
+      "oldCpc": 40,
+      "newCpc": 40,
+      "recCpc": 40,
+      "changed": false,
+      "verdict": "PR2位（上位すぎ）→ 40円へ減額"
+    },
+    {
+      "itemMngId": "compass1768890284",
+      "keyword": "植物育成ライト タイマー",
+      "rank": 4,
+      "oldCpc": 40,
+      "newCpc": 40,
+      "recCpc": 47,
+      "changed": false,
+      "verdict": "PR4位（目標内）→ 変更なし"
+    },
+    {
+      "itemMngId": "compass1768890284",
+      "keyword": "観葉植物 ライト",
+      "rank": null,
+      "oldCpc": 43,
+      "newCpc": 53,
+      "recCpc": 60,
+      "changed": true,
+      "verdict": "圏外 → 53円へ増額"
+    },
+    {
+      "itemMngId": "compass1768890284",
+      "keyword": "観葉植物 ライト クリップ",
+      "rank": 1,
+      "oldCpc": 40,
+      "newCpc": 40,
+      "recCpc": 26,
+      "changed": false,
+      "verdict": "PR1位（上位すぎ）→ 40円へ減額"
+    },
+    {
+      "itemMngId": "compass1768890284",
+      "keyword": "観葉植物 ライト 室内",
+      "rank": null,
+      "oldCpc": 55,
+      "newCpc": 65,
+      "recCpc": 209,
+      "changed": true,
+      "verdict": "圏外 → 65円へ増額"
+    },
+    {
+      "itemMngId": "compass1769141353",
+      "keyword": "握力",
+      "rank": null,
+      "oldCpc": 40,
+      "newCpc": 50,
+      "recCpc": 81,
+      "changed": true,
+      "verdict": "圏外 → 50円へ増額"
+    },
+    {
+      "itemMngId": "compass1769141353",
+      "keyword": "握力 トレーニング",
+      "rank": 4,
+      "oldCpc": 60,
+      "newCpc": 60,
+      "recCpc": 63,
+      "changed": false,
+      "verdict": "PR4位（目標内）→ 変更なし"
+    },
+    {
+      "itemMngId": "compass1769141353",
+      "keyword": "握力 筋トレ",
+      "rank": null,
+      "oldCpc": 50,
+      "newCpc": 60,
+      "recCpc": 50,
+      "changed": true,
+      "verdict": "圏外 → 60円へ増額"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,18 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - img [ref=e6]
+    - text: システムエラー
+  - generic [ref=e8]:
+    - text: 大変申し訳ございません。
+    - text: ユーザー情報が正しく取得できないため、サービスのご利用を継続することができません。
+    - text: 下記から
+    - link "ログアウト" [ref=e9] [cursor=pointer]:
+      - /url: https://ad.rms.rakuten.co.jp/rpp/api/auth/logout
+    - text: し、再度操作をやり直してください。
+  - generic [ref=e10]:
+    - link "RMSメインメニュー" [ref=e12] [cursor=pointer]:
+      - /url: https://mainmenu.rms.rakuten.co.jp/
+    - text: (
+    - link "ログアウト" [ref=e13] [cursor=pointer]:
+      - /url: https://ad.rms.rakuten.co.jp/rpp/api/auth/logout
+    - text: )

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>pathbright SNS Post</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Manrope:wght@300;400;500;600&family=Noto+Sans+JP:wght@200;300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #1a1a1a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+
+    .post {
+      width: 1080px;
+      height: 1080px;
+      background: #080808;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* 背景: 道路の遠近感ライン */
+    .bg-lines {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .bg-lines svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* 上部グラデーション */
+    .bg-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 50% 100%, rgba(180,130,60,0.06) 0%, transparent 70%),
+        linear-gradient(180deg, #080808 0%, rgba(8,8,8,0.85) 40%, rgba(8,8,8,0.92) 100%);
+      z-index: 1;
+    }
+
+    /* コンテンツ全体 */
+    .content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding: 64px 80px;
+    }
+
+    /* ── TOP ── */
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 300;
+      letter-spacing: 0.25em;
+      color: #c5c0ba;
+    }
+
+    .alert-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(200, 140, 50, 0.12);
+      border: 1px solid rgba(200, 140, 50, 0.35);
+      border-radius: 2px;
+      padding: 8px 18px;
+    }
+    .alert-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #C88C32;
+    }
+    .alert-badge span {
+      font-family: 'Manrope', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      color: #C88C32;
+      text-transform: uppercase;
+    }
+
+    /* ── MIDDLE ── */
+    .middle {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0;
+      padding: 20px 0;
+    }
+
+    .headline {
+      font-size: 48px;
+      font-weight: 400;
+      color: #E8E4DE;
+      letter-spacing: 0.03em;
+      line-height: 1.45;
+      margin-bottom: 36px;
+    }
+    .headline em {
+      font-style: normal;
+      color: #C88C32;
+    }
+
+    .rule-box {
+      border-left: 2px solid rgba(200,140,50,0.5);
+      padding: 20px 28px;
+      margin-bottom: 36px;
+      background: rgba(200,140,50,0.04);
+    }
+    .rule-box .rule-label {
+      font-family: 'Manrope', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: #C88C32;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .rule-box .rule-main {
+      font-size: 32px;
+      font-weight: 300;
+      color: #E8E4DE;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+    }
+    .rule-box .rule-main strong {
+      font-weight: 500;
+      color: #fff;
+    }
+
+    .penalties {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+    .penalty-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .penalty-item .step {
+      font-family: 'Manrope', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: #6B6560;
+      width: 28px;
+      flex-shrink: 0;
+    }
+    .penalty-arrow {
+      color: #C88C32;
+      font-size: 14px;
+      margin-right: 4px;
+    }
+    .penalty-item .label {
+      font-size: 22px;
+      font-weight: 300;
+      color: #c5c0ba;
+      letter-spacing: 0.04em;
+    }
+
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: rgba(200,140,50,0.4);
+      margin-bottom: 32px;
+    }
+
+    .body-text {
+      font-size: 20px;
+      font-weight: 300;
+      color: #7a7570;
+      line-height: 2;
+      letter-spacing: 0.05em;
+    }
+    .body-text .highlight {
+      color: #c5c0ba;
+      font-weight: 400;
+    }
+
+    /* ── BOTTOM ── */
+    .bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .hashtags {
+      font-family: 'Manrope', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      color: #3a3835;
+      letter-spacing: 0.05em;
+      line-height: 1.8;
+    }
+
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 20px;
+      border-top: 1px solid #1c1c1c;
+    }
+    .bottom-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      color: #4a4744;
+    }
+    .bottom-tagline {
+      font-family: 'Manrope', sans-serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      color: #3a3835;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="post">
+    <!-- 背景ライン（道路の遠近感） -->
+    <div class="bg-lines">
+      <svg viewBox="0 0 1080 1080" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#2a2520" stop-opacity="0"/>
+            <stop offset="60%" stop-color="#2a2520" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#C88C32" stop-opacity="0.08"/>
+          </linearGradient>
+        </defs>
+        <!-- 道路パース風ライン -->
+        <line x1="540" y1="1080" x2="200" y2="300" stroke="url(#lineGrad)" stroke-width="1"/>
+        <line x1="540" y1="1080" x2="880" y2="300" stroke="url(#lineGrad)" stroke-width="1"/>
+        <line x1="540" y1="1080" x2="350" y2="400" stroke="url(#lineGrad)" stroke-width="0.5" stroke-opacity="0.5"/>
+        <line x1="540" y1="1080" x2="730" y2="400" stroke="url(#lineGrad)" stroke-width="0.5" stroke-opacity="0.5"/>
+        <line x1="540" y1="1080" x2="100" y2="500" stroke="url(#lineGrad)" stroke-width="0.3" stroke-opacity="0.3"/>
+        <line x1="540" y1="1080" x2="980" y2="500" stroke="url(#lineGrad)" stroke-width="0.3" stroke-opacity="0.3"/>
+        <!-- 地平線 -->
+        <line x1="0" y1="580" x2="1080" y2="580" stroke="#2a2520" stroke-width="0.5" stroke-opacity="0.4"/>
+      </svg>
+    </div>
+
+    <div class="bg-overlay"></div>
+
+    <div class="content">
+      <!-- TOP -->
+      <div class="top">
+        <div class="brand">pathbright</div>
+        <div class="alert-badge">
+          <div class="dot"></div>
+          <span>News · 2026.04</span>
+        </div>
+      </div>
+
+      <!-- MIDDLE -->
+      <div class="middle">
+        <div class="headline">
+          来月（4月）から、<br>
+          <em>荷待ちのルールが変わります。</em>
+        </div>
+
+        <div class="rule-box">
+          <div class="rule-label">New Rule · April 2026</div>
+          <div class="rule-main">
+            荷待ち＋荷役の合計時間を<br>
+            <strong>【2時間以内】</strong>にすることが<br>
+            荷主に法律で義務化されます。
+          </div>
+        </div>
+
+        <div class="penalties">
+          <div class="penalty-item">
+            <span class="step">01</span>
+            <span class="penalty-arrow">→</span>
+            <span class="label">指導・勧告</span>
+          </div>
+          <div class="penalty-item">
+            <span class="step">02</span>
+            <span class="penalty-arrow">→</span>
+            <span class="label">社名公表</span>
+          </div>
+          <div class="penalty-item">
+            <span class="step">03</span>
+            <span class="penalty-arrow">→</span>
+            <span class="label">業務改善命令</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="body-text">
+          <span class="highlight">現場のドライバーが長年声を上げ続けてきた問題が、</span><br>
+          ようやく法律で動き始めています。<br>
+          本当に変わるかどうか、まだ分からない。<br>
+          でも、<span class="highlight">動き始めたのは事実です。</span>
+        </div>
+      </div>
+
+      <!-- BOTTOM -->
+      <div class="bottom">
+        <div class="hashtags">
+          #荷待ち2時間ルール &nbsp;#物効法 &nbsp;#2026年問題 &nbsp;#トラックドライバー &nbsp;#物流 &nbsp;#長距離ドライバー &nbsp;#働き方改革 &nbsp;#pathbright
+        </div>
+        <div class="bottom-bar">
+          <div class="bottom-brand">pathbright</div>
+          <div class="bottom-tagline">Truck Driver's Comfort Brand</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

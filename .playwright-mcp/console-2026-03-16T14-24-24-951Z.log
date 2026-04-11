@@ -1,0 +1,2 @@
+[    8048ms] [ERROR] Failed to load resource: the server responded with a status of 502 () @ https://screenshot-api-production-7bb9.up.railway.app/api/screenshot?imageUrl=https://picsum.photos/1080/1080&cpSub=%E5%AE%89%E5%AE%9A%E3%81%97%E3%81%9F%E5%8F%8E%E5%85%A5%E3%81%A7&cpMain=%E6%9C%AA%E6%9D%A5%E3%82%92%E5%A4%89%E3%81%88%E3%82%8D:0
+[    8903ms] [ERROR] Failed to load resource: the server responded with a status of 502 () @ https://screenshot-api-production-7bb9.up.railway.app/favicon.ico:0

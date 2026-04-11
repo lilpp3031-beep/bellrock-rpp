@@ -1,0 +1,3 @@
+[     781ms] [ERROR] Failed to load resource: the server responded with a status of 401 () @ https://ad.rms.rakuten.co.jp/rpp/api/top/appData:0
+[     935ms] TypeError: Cannot read properties of undefined (reading 'data')
+    at https://ad.rms.rakuten.co.jp/rpp/index.4f3c6ffa.js:15:10139

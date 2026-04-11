@@ -1,0 +1,118 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - link "Rakuten RMS" [ref=e9] [cursor=pointer]:
+          - /url: https://mainmenu.rms.rakuten.co.jp/
+          - img "Rakuten RMS" [ref=e10]
+        - img "header secondary" [ref=e12]
+      - generic [ref=e13]:
+        - navigation [ref=e15]:
+          - button "bellrock楽天市場店様" [ref=e16] [cursor=pointer]:
+            - generic [ref=e18]: bellrock楽天市場店様
+            - img [ref=e21]
+        - link [ref=e24] [cursor=pointer]:
+          - /url: https://www.rakuten.co.jp/shops/manual/navi/promotion/07_333.html
+          - img [ref=e25]
+    - navigation [ref=e28]:
+      - generic [ref=e29]:
+        - navigation [ref=e31]:
+          - list [ref=e32]:
+            - listitem [ref=e33]:
+              - link "楽天市場 ／楽天グループ広告" [ref=e34] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/ec/top
+                - generic [ref=e36]:
+                  - generic [ref=e37]: 楽天市場
+                  - generic [ref=e38]: ／楽天グループ広告
+            - listitem [ref=e39]:
+              - link "検索連動型広告 （RPP）" [ref=e40] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/rpp/top
+                - generic [ref=e42]:
+                  - generic [ref=e43]: 検索連動型広告
+                  - generic [ref=e44]: （RPP）
+            - listitem [ref=e45]:
+              - link "検索連動型広告 -エクスパンション" [ref=e46] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/rppexp/top
+                - generic [ref=e48]:
+                  - generic [ref=e49]: 検索連動型広告
+                  - generic [ref=e50]: "-エクスパンション"
+            - listitem [ref=e51]:
+              - link "効果保証型広告 （楽天CPA広告）" [ref=e52] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/cpa/top
+                - generic [ref=e54]:
+                  - generic [ref=e55]: 効果保証型広告
+                  - generic [ref=e56]: （楽天CPA広告）
+            - listitem [ref=e57]:
+              - link "運用型クーポン広告 （クーポンアドバンス 広告）" [ref=e58] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/cpnadv/top
+                - generic [ref=e60]:
+                  - generic [ref=e61]: 運用型クーポン広告
+                  - generic [ref=e62]: （クーポンアドバンス
+                  - generic [ref=e63]: 広告）
+            - listitem [ref=e64]:
+              - link "ターゲティング ディスプレイ広告 （TDA）" [ref=e65] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/tda/top
+                - generic [ref=e67]:
+                  - generic [ref=e68]: ターゲティング
+                  - generic [ref=e69]: ディスプレイ広告
+                  - generic [ref=e70]: （TDA）
+            - listitem [ref=e71]:
+              - link "ターゲティング ディスプレイ広告 -エクスパンション" [ref=e72] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/tdaexp/top
+                - generic [ref=e74]:
+                  - generic [ref=e75]: ターゲティング
+                  - generic [ref=e76]: ディスプレイ広告
+                  - generic [ref=e77]: "-エクスパンション"
+            - listitem [ref=e78]:
+              - link "広告購入履歴" [ref=e79] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/shared/purchase_summary
+                - generic [ref=e82]: 広告購入履歴
+        - navigation [ref=e85]:
+          - list [ref=e86]:
+            - listitem [ref=e87]:
+              - link "ホーム" [ref=e88] [cursor=pointer]:
+                - /url: /rpp/top
+                - generic [ref=e89]:
+                  - img [ref=e91]
+                  - generic [ref=e94]: ホーム
+            - listitem [ref=e95]:
+              - link "キャンペーン" [ref=e96] [cursor=pointer]:
+                - /url: /rpp/campaigns
+                - generic [ref=e97]:
+                  - img [ref=e100]
+                  - generic [ref=e103]: キャンペーン
+            - listitem [ref=e104]:
+              - link "商品・ キーワード設定" [ref=e105] [cursor=pointer]:
+                - /url: /rpp/items
+                - generic [ref=e106]:
+                  - img [ref=e108]
+                  - generic [ref=e110]:
+                    - generic [ref=e111]: 商品・
+                    - generic [ref=e112]: キーワード設定
+            - listitem [ref=e113]:
+              - link "除外商品" [ref=e114] [cursor=pointer]:
+                - /url: /rpp/exclude
+                - generic [ref=e115]:
+                  - img [ref=e117]
+                  - generic [ref=e120]: 除外商品
+            - listitem [ref=e121]:
+              - link "パフォーマンス レポート" [ref=e122] [cursor=pointer]:
+                - /url: /rpp/reports
+                - generic [ref=e123]:
+                  - img [ref=e125]
+                  - generic [ref=e127]:
+                    - generic [ref=e128]: パフォーマンス
+                    - generic [ref=e129]: レポート
+            - listitem [ref=e130]:
+              - link "ダウンロード履歴" [ref=e131] [cursor=pointer]:
+                - /url: /rpp/download
+                - generic [ref=e132]:
+                  - img [ref=e134]
+                  - generic [ref=e137]: ダウンロード履歴
+            - listitem [ref=e138]:
+              - link "メール受信設定" [ref=e139] [cursor=pointer]:
+                - /url: /rpp/mails
+                - generic [ref=e140]:
+                  - img [ref=e142]
+                  - generic [ref=e145]: メール受信設定
+  - generic [ref=e148]: © Rakuten Group, Inc.

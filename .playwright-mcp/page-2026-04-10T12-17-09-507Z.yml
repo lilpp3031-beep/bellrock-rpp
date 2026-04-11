@@ -1,0 +1,261 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - link "Rakuten RMS" [ref=e9] [cursor=pointer]:
+          - /url: https://mainmenu.rms.rakuten.co.jp/
+          - img "Rakuten RMS" [ref=e10]
+        - img "header secondary" [ref=e12]
+      - generic [ref=e13]:
+        - navigation [ref=e15]:
+          - button "bellrock楽天市場店様" [ref=e16] [cursor=pointer]:
+            - generic [ref=e18]: bellrock楽天市場店様
+            - img [ref=e21]
+        - link [ref=e24] [cursor=pointer]:
+          - /url: https://www.rakuten.co.jp/shops/manual/navi/promotion/07_333.html
+          - img [ref=e25]
+    - navigation [ref=e28]:
+      - generic [ref=e29]:
+        - navigation [ref=e31]:
+          - list [ref=e32]:
+            - listitem [ref=e33]:
+              - link "楽天市場 ／楽天グループ広告" [ref=e34] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/ec/top
+                - generic [ref=e36]:
+                  - generic [ref=e37]: 楽天市場
+                  - generic [ref=e38]: ／楽天グループ広告
+            - listitem [ref=e39]:
+              - link "検索連動型広告 （RPP）" [ref=e40] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/rpp/top
+                - generic [ref=e42]:
+                  - generic [ref=e43]: 検索連動型広告
+                  - generic [ref=e44]: （RPP）
+            - listitem [ref=e45]:
+              - link "検索連動型広告 -エクスパンション" [ref=e46] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/rppexp/top
+                - generic [ref=e48]:
+                  - generic [ref=e49]: 検索連動型広告
+                  - generic [ref=e50]: "-エクスパンション"
+            - listitem [ref=e51]:
+              - link "効果保証型広告 （楽天CPA広告）" [ref=e52] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/cpa/top
+                - generic [ref=e54]:
+                  - generic [ref=e55]: 効果保証型広告
+                  - generic [ref=e56]: （楽天CPA広告）
+            - listitem [ref=e57]:
+              - link "運用型クーポン広告 （クーポンアドバンス 広告）" [ref=e58] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/cpnadv/top
+                - generic [ref=e60]:
+                  - generic [ref=e61]: 運用型クーポン広告
+                  - generic [ref=e62]: （クーポンアドバンス
+                  - generic [ref=e63]: 広告）
+            - listitem [ref=e64]:
+              - link "ターゲティング ディスプレイ広告 （TDA）" [ref=e65] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/tda/top
+                - generic [ref=e67]:
+                  - generic [ref=e68]: ターゲティング
+                  - generic [ref=e69]: ディスプレイ広告
+                  - generic [ref=e70]: （TDA）
+            - listitem [ref=e71]:
+              - link "ターゲティング ディスプレイ広告 -エクスパンション" [ref=e72] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/tdaexp/top
+                - generic [ref=e74]:
+                  - generic [ref=e75]: ターゲティング
+                  - generic [ref=e76]: ディスプレイ広告
+                  - generic [ref=e77]: "-エクスパンション"
+            - listitem [ref=e78]:
+              - link "広告購入履歴" [ref=e79] [cursor=pointer]:
+                - /url: https://ad.rms.rakuten.co.jp/shared/purchase_summary
+                - generic [ref=e82]: 広告購入履歴
+        - navigation [ref=e85]:
+          - list [ref=e86]:
+            - listitem [ref=e87]:
+              - link "ホーム" [ref=e88] [cursor=pointer]:
+                - /url: /rpp/top
+                - generic [ref=e89]:
+                  - img [ref=e91]
+                  - generic [ref=e94]: ホーム
+            - listitem [ref=e95]:
+              - link "キャンペーン" [ref=e96] [cursor=pointer]:
+                - /url: /rpp/campaigns
+                - generic [ref=e97]:
+                  - img [ref=e100]
+                  - generic [ref=e103]: キャンペーン
+            - listitem [ref=e104]:
+              - link "商品・ キーワード設定" [ref=e105] [cursor=pointer]:
+                - /url: /rpp/items
+                - generic [ref=e106]:
+                  - img [ref=e108]
+                  - generic [ref=e110]:
+                    - generic [ref=e111]: 商品・
+                    - generic [ref=e112]: キーワード設定
+            - listitem [ref=e113]:
+              - link "除外商品" [ref=e114] [cursor=pointer]:
+                - /url: /rpp/exclude
+                - generic [ref=e115]:
+                  - img [ref=e117]
+                  - generic [ref=e120]: 除外商品
+            - listitem [ref=e121]:
+              - link "パフォーマンス レポート" [ref=e122] [cursor=pointer]:
+                - /url: /rpp/reports
+                - generic [ref=e123]:
+                  - img [ref=e125]
+                  - generic [ref=e127]:
+                    - generic [ref=e128]: パフォーマンス
+                    - generic [ref=e129]: レポート
+            - listitem [ref=e130]:
+              - link "ダウンロード履歴" [ref=e131] [cursor=pointer]:
+                - /url: /rpp/download
+                - generic [ref=e132]:
+                  - img [ref=e134]
+                  - generic [ref=e137]: ダウンロード履歴
+            - listitem [ref=e138]:
+              - link "メール受信設定" [ref=e139] [cursor=pointer]:
+                - /url: /rpp/mails
+                - generic [ref=e140]:
+                  - img [ref=e142]
+                  - generic [ref=e145]: メール受信設定
+  - generic [ref=e147]:
+    - heading "section-header-icon 商品・キーワード設定" [level=1] [ref=e148]:
+      - img "section-header-icon" [ref=e150]
+      - generic [ref=e151]: 商品・キーワード設定
+    - generic [ref=e152]: 商品・キーワードごとに適用されるCPCを設定することができます。なお、商品に適用されるCPCは上限クリック単価、キーワードは固定クリック単価として適用されます。
+    - generic [ref=e153]: 登録済み商品数：0件
+    - generic [ref=e154]: 登録済みキーワード数：0件
+    - generic [ref=e155]:
+      - button "商品・キーワードCPC設定方法と注意点について" [ref=e156] [cursor=pointer]:
+        - generic [ref=e157]:
+          - generic [ref=e158]:
+            - img [ref=e160]
+            - text: 商品・キーワードCPC設定方法と注意点について
+          - img [ref=e163]
+      - generic:
+        - paragraph [ref=e167]: 削除したい商品設定・キーワードがある場合は、該当の商品、もしくはキーワードにチェックを入れて「設定削除」、もしくは「キーワード一括削除」をクリックしてください。
+        - list [ref=e168]:
+          - listitem [ref=e169]: 商品設定を一括削除した場合、登録されている商品CPCとキーワードCPCの両方が削除され、リストからなくなります。
+          - listitem [ref=e170]:
+            - text: 商品CPCのみを削除した場合、商品CPCに”０”を入力するか空欄にしてからEnterキーを押してください。
+            - text: ※キーワードが設定されていなかった場合、商品CPCを削除すると商品はリストからなくなります。
+            - text: ※キーワードが設定されていて、商品CPCの設定がない場合は商品CPCが"-円"になります。
+          - listitem [ref=e171]:
+            - text: RMS上で削除された商品は画面上では背景でグレーで表示され、その商品に登録されたキーワードも画面上ではグレーで表示されます。また、全件ダウンロードcsv上では「商品情報が取得できませんでした」と記載されます。
+            - text: ※配信はされませんが、自動で削除されませんので、適宜削除をお願い致します。
+          - listitem [ref=e172]: RMSで削除した商品と同一商品管理番号で新規商品を登録した場合、新規商品は「登録済み商品」に反映されないため、CPC・キーワード設定したい場合は過去登録した同一商品管理番号商品を削除いただいた上で、再登録してください。
+        - generic [ref=e173]:
+          - text: RMSで削除した商品・キーワードに関する仕様詳細は
+          - link "こちら" [ref=e174] [cursor=pointer]:
+            - /url: https://www.rakuten.co.jp/shops/manual/navi/promotion/07_336.html
+          - text: をご確認ください。
+        - generic [ref=e175]: 目安CPCはあくまで目安であり、環境に応じて上下いたします。一時表示されても翌日にはCPCが高騰することもございますので、予めご了承ください。
+        - generic [ref=e176]:
+          - text: ※運用方法と効果改善のRUx講座は
+          - link "こちら" [ref=e177] [cursor=pointer]:
+            - /url: https://daigaku.rms.rakuten.co.jp/rmsapp/watch/50232
+    - generic [ref=e178]:
+      - button "キーワード検索順位データについて" [ref=e179] [cursor=pointer]:
+        - generic [ref=e180]:
+          - generic [ref=e181]:
+            - img [ref=e183]
+            - text: キーワード検索順位データについて
+          - img [ref=e186]
+      - generic:
+        - paragraph [ref=e190]: ■キーワード検索順位とは
+        - paragraph [ref=e191]: ご登録いただいたキーワードの検索結果に表示される広告枠において、その商品が上から何位に表示されていたかを表します。
+        - paragraph [ref=e192]:
+          - text: ※順位は常に変動しており、最新（リアルタイム）の順位と必ずしも一致しません。
+          - text: ※当日分データは直近1時間前～4時間前の検索順位になります。
+          - text: ※過去分データは2022年6月1日まで遡ってダウンロード可能です。
+        - paragraph [ref=e193]: ■データ取得方法
+        - list [ref=e194]:
+          - listitem [ref=e195]: 「キーワード検索順位ダウンロード」ボタンをクリック後、「ダウンロード履歴」ページより、レポートをダウンロードしてください。
+          - listitem [ref=e196]: キーワード検索順位は当日分データか、過去データかをダウンロード可能です。
+    - generic [ref=e200]:
+      - textbox "商品管理番号" [ref=e202]
+      - button "検索" [ref=e203] [cursor=pointer]
+    - generic [ref=e205]:
+      - generic [ref=e206]:
+        - generic [ref=e208]:
+          - button "設定削除" [disabled] [ref=e209]:
+            - img [ref=e211]
+            - text: 設定削除
+          - button "新規登録" [ref=e213] [cursor=pointer]:
+            - img [ref=e215]
+            - text: 新規登録
+          - button "一括アップロード" [ref=e218] [cursor=pointer]:
+            - generic [ref=e219]:
+              - img [ref=e221]
+              - text: 一括アップロード
+              - img [ref=e224]
+          - button "全件ダウンロード" [disabled] [ref=e227]:
+            - generic [ref=e228]:
+              - img [ref=e230]
+              - text: 全件ダウンロード
+              - img [ref=e233]
+          - button "キーワード検索順位ダウンロード" [ref=e235] [cursor=pointer]:
+            - img [ref=e237]
+            - text: キーワード検索順位ダウンロード
+        - generic [ref=e239]:
+          - generic [ref=e240]:
+            - generic [ref=e242]: 0～0件 (全0件)
+            - generic [ref=e243]:
+              - button "‹‹" [disabled] [ref=e244]
+              - button "‹" [disabled] [ref=e245]
+              - button "1" [ref=e246] [cursor=pointer]
+              - button "›" [disabled] [ref=e247]
+              - button "››" [disabled] [ref=e248]
+          - generic [ref=e249]:
+            - text: Page
+            - generic [ref=e253]:
+              - generic:
+                - spinbutton [disabled]: "1"
+            - text: of 1
+      - table [ref=e255]:
+        - rowgroup [ref=e256]:
+          - row "Toggle All Rows Selected 商品管理番号 商品名 商品画像 価格 商品CPC (1クリックあたりの上限クリック単価) キーワード 最終操作日時" [ref=e257]:
+            - columnheader "Toggle All Rows Selected" [ref=e258]:
+              - checkbox "Toggle All Rows Selected" [disabled] [ref=e260] [cursor=pointer]
+            - columnheader "商品管理番号" [ref=e261]:
+              - generic [ref=e262]:
+                - generic [ref=e263]: 商品管理番号
+                - generic [ref=e266]:
+                  - img [ref=e268]
+                  - img [ref=e271]
+            - columnheader "商品名" [ref=e273]:
+              - generic [ref=e275]: 商品名
+            - columnheader "商品画像" [ref=e276]:
+              - generic [ref=e278]: 商品画像
+            - columnheader "価格" [ref=e279]:
+              - generic [ref=e281]:
+                - text: 価格
+                - img [ref=e282]
+            - columnheader "商品CPC (1クリックあたりの上限クリック単価)" [ref=e284]:
+              - generic [ref=e286]:
+                - text: 商品CPC
+                - img [ref=e287]
+                - text: (1クリックあたりの上限クリック単価)
+            - columnheader "キーワード" [ref=e289]:
+              - generic [ref=e291]:
+                - text: キーワード
+                - img [ref=e292]
+            - columnheader "最終操作日時" [ref=e294]:
+              - generic [ref=e295]:
+                - generic [ref=e296]: 最終操作日時
+                - generic [ref=e299]:
+                  - img [ref=e301]
+                  - img [ref=e304]
+      - generic [ref=e310]:
+        - generic [ref=e311]:
+          - generic [ref=e313]: 0～0件 (全0件)
+          - generic [ref=e314]:
+            - button "‹‹" [disabled] [ref=e315]
+            - button "‹" [disabled] [ref=e316]
+            - button "1" [ref=e317] [cursor=pointer]
+            - button "›" [disabled] [ref=e318]
+            - button "››" [disabled] [ref=e319]
+        - generic [ref=e320]:
+          - text: Page
+          - generic [ref=e324]:
+            - generic:
+              - spinbutton [disabled]: "1"
+          - text: of 1
+  - generic [ref=e327]: © Rakuten Group, Inc.

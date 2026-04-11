@@ -1,0 +1,51 @@
+- generic [ref=e2]:
+  - img [ref=e6]
+  - generic:
+    - main:
+      - generic [ref=e8]:
+        - img [ref=e11]
+        - generic [ref=e13]:
+          - heading "ようこそ lilpp3031@gmail.com" [level=1] [ref=e14]
+          - generic [ref=e17]:
+            - generic [ref=e19]:
+              - generic [ref=e20]:
+                - generic:
+                  - text: パスワード
+                  - generic: (必須)
+              - generic [ref=e21]:
+                - textbox "パスワード" [ref=e24]
+                - img [ref=e25]
+            - checkbox "パスワードを表示する" [ref=e30] [cursor=pointer]:
+              - checkbox "パスワードを表示する" [ref=e31]:
+                - generic [ref=e36]: パスワードを表示する
+                - img [ref=e37]
+          - button "次へ" [ref=e40] [cursor=pointer]:
+            - generic [ref=e41]: 次へ
+          - generic [ref=e42]:
+            - button "パスワードをお忘れの方" [ref=e43] [cursor=pointer]:
+              - generic [ref=e45]:
+                - text: パスワードをお忘れの方
+                - img [ref=e47]
+            - button "別の楽天IDでログイン" [ref=e50] [cursor=pointer]:
+              - generic [ref=e52]:
+                - text: 別の楽天IDでログイン
+                - img [ref=e54]
+          - link "JP Cert logo" [ref=e57] [cursor=pointer]:
+            - /url: https://www.jpcert.or.jp/pr/stop-password.html
+            - img "JP Cert logo" [ref=e59]
+        - button "Language" [ref=e66] [cursor=pointer]:
+          - generic [ref=e67]:
+            - img [ref=e69]
+            - generic [ref=e71]: Language
+            - img [ref=e73]
+        - generic [ref=e75]:
+          - link "ヘルプ" [ref=e77] [cursor=pointer]:
+            - /url: https://ichiba.faq.rakuten.net/category/log-in-membership
+            - generic [ref=e78]: ヘルプ
+          - link "個人情報保護方針" [ref=e80] [cursor=pointer]:
+            - /url: https://privacy.rakuten.co.jp/
+            - generic [ref=e81]: 個人情報保護方針
+          - link "会員規約" [ref=e83] [cursor=pointer]:
+            - /url: https://corp.rakuten.co.jp/terms/
+            - generic [ref=e84]: 会員規約
+        - generic [ref=e86]: © Rakuten

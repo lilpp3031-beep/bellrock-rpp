@@ -1,0 +1,2 @@
+[    1690ms] [WARNING] [Meta Pixel] - Duplicate Pixel ID: 1521042244879171. @ https://connect.facebook.net/en_US/fbevents.js:175
+[    2141ms] [WARNING] <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes"> @ https://buffer.com/developers/api:0

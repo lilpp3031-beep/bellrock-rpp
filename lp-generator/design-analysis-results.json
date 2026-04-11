@@ -1,0 +1,122 @@
+[
+  {
+    "url": "https://www.amazon.co.jp/NILE-%E6%BF%83%E5%AF%86%E6%B3%A1%E3%82%B9%E3%82%AB%E3%83%AB%E3%83%97%E3%82%B7%E3%83%A3%E3%83%B3%E3%83%97%E3%83%BC/dp/B0DLJP1FMD",
+    "category": "beauty",
+    "status": "success",
+    "analysis": {
+      "title": "NILE 濃密泡スカルプシャンプー メンズ アミノ酸シャンプー ノンシリコン (LAFRANCE（ラフランス）の香り)",
+      "category": "beauty",
+      "sections": [],
+      "colors": {
+        "primary": [
+          "#FF9900"
+        ],
+        "secondary": [
+          "#146EB4"
+        ]
+      },
+      "layout": {
+        "type": "grid",
+        "alignment": "center",
+        "spacing": "normal"
+      },
+      "typography": {
+        "heading": {
+          "size": "24px",
+          "weight": "bold",
+          "fontFamily": "Amazon Ember, Arial, sans-serif"
+        },
+        "cta": {
+          "size": "16px",
+          "weight": "bold",
+          "style": "button"
+        }
+      },
+      "imagery": {
+        "style": "product-showcase",
+        "imageCount": 5,
+        "aspectRatio": "square"
+      }
+    }
+  },
+  {
+    "url": "https://www.amazon.co.jp/Goreson-%E3%83%97%E3%83%A9%E3%83%A2%E3%83%87%E3%83%AB%E7%94%A8%E5%B7%A5%E5%85%B7/dp/B08JLRNR6K",
+    "category": "tools",
+    "status": "success",
+    "analysis": {
+      "title": "プラモデル用工具 入門ツール セット 14点 ニッパー プラモデル用工具 初心者 薄刃 クラフト収納ケース ツール ニッパー モデラーズナイフ ダイヤモンドヤスリ ピンセット 精密ピンセット付き",
+      "category": "tools",
+      "sections": [],
+      "colors": {
+        "primary": [
+          "#FF9900"
+        ],
+        "secondary": [
+          "#146EB4"
+        ]
+      },
+      "layout": {
+        "type": "grid",
+        "alignment": "center",
+        "spacing": "normal"
+      },
+      "typography": {
+        "heading": {
+          "size": "24px",
+          "weight": "bold",
+          "fontFamily": "Amazon Ember, Arial, sans-serif"
+        },
+        "cta": {
+          "size": "16px",
+          "weight": "bold",
+          "style": "button"
+        }
+      },
+      "imagery": {
+        "style": "product-showcase",
+        "imageCount": 5,
+        "aspectRatio": "square"
+      }
+    }
+  },
+  {
+    "url": "https://www.amazon.co.jp/IKSTAR-%E7%AC%AC%E5%9B%9B%E4%B8%96%E4%BB%A3-%E3%83%98%E3%83%AB%E3%82%B9%E3%82%B1%E3%82%A2%E5%BA%A7%E5%B8%83%E5%9B%A3/dp/B072HG7HNG",
+    "category": "furniture",
+    "status": "success",
+    "analysis": {
+      "title": "IKSTAR チェアパッド 低反発 椅子 クッション 座布団 裏面は滑り止め加工され 通気性 ブラック",
+      "category": "furniture",
+      "sections": [],
+      "colors": {
+        "primary": [
+          "#FF9900"
+        ],
+        "secondary": [
+          "#146EB4"
+        ]
+      },
+      "layout": {
+        "type": "grid",
+        "alignment": "center",
+        "spacing": "normal"
+      },
+      "typography": {
+        "heading": {
+          "size": "24px",
+          "weight": "bold",
+          "fontFamily": "Amazon Ember, Arial, sans-serif"
+        },
+        "cta": {
+          "size": "16px",
+          "weight": "bold",
+          "style": "button"
+        }
+      },
+      "imagery": {
+        "style": "product-showcase",
+        "imageCount": 5,
+        "aspectRatio": "square"
+      }
+    }
+  }
+]

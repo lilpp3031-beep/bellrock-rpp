@@ -1,0 +1,7 @@
+[    1369ms] [WARNING] Origin trial controlled feature not enabled: 'language-model'. @ https://public.codepenassets.com/embed/index.js:0
+[    1369ms] [WARNING] Origin trial controlled feature not enabled: 'rewriter'. @ https://public.codepenassets.com/embed/index.js:0
+[    1369ms] [WARNING] Origin trial controlled feature not enabled: 'writer'. @ https://public.codepenassets.com/embed/index.js:0
+[    2955ms] [WARNING] Origin trial controlled feature not enabled: 'language-model'. @ https://codepen.io/anon/embed/bNpjxMQ?height=500&slug-hash=bNpjxMQ&name=cp_embed_2:687
+[    2955ms] [WARNING] Origin trial controlled feature not enabled: 'rewriter'. @ https://codepen.io/anon/embed/bNpjxMQ?height=500&slug-hash=bNpjxMQ&name=cp_embed_2:687
+[    2955ms] [WARNING] Origin trial controlled feature not enabled: 'writer'. @ https://codepen.io/anon/embed/bNpjxMQ?height=500&slug-hash=bNpjxMQ&name=cp_embed_2:687
+[    7315ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0

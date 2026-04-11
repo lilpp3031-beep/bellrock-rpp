@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp", "--figma-api-key", "figd_4vlEpbPmNi5mLI3ugcPVmCIih_rBpRH0SIJFTfaz", "--stdio"]
+    },
+    "cursor-talk-to-figma": {
+      "command": "/Users/hikaru/.bun/bin/bun",
+      "args": ["x", "cursor-talk-to-figma-mcp"]
+    }
+  }
+}

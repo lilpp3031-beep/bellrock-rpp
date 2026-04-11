@@ -1,0 +1,6 @@
+[    2943ms] [WARNING] [DEPRECATED] atomFamily is deprecated and will be removed in v3. Please use the `jotai-family` package instead: https://github.com/jotaijs/jotai-family @ https://railway.com/_next/static/chunks/pages/_app-a57f61fa4a7b68b6.js:3
+[    3102ms] [WARNING] In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app. @ https://railway.com/_next/static/chunks/pages/_app-a57f61fa4a7b68b6.js:7
+[   82346ms] [WARNING] [DEPRECATED] atomFamily is deprecated and will be removed in v3. Please use the `jotai-family` package instead: https://github.com/jotaijs/jotai-family @ https://railway.com/_next/static/chunks/pages/_app-a57f61fa4a7b68b6.js:3
+[   82465ms] [WARNING] In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app. @ https://railway.com/_next/static/chunks/pages/_app-a57f61fa4a7b68b6.js:7
+[  116230ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 129px". @ https://cmp.osano.com/qVHEV4lSSU/738deb1e-f024-459e-ae0a-2e6a0d461ea8/osano.js:0
+[  126174ms] [ERROR] Error: <svg> attribute viewBox: Expected number, "0 0 100% 46px". @ https://cmp.osano.com/qVHEV4lSSU/738deb1e-f024-459e-ae0a-2e6a0d461ea8/osano.js:0

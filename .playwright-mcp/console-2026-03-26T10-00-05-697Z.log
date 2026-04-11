@@ -1,0 +1,15 @@
+[    1864ms] [WARNING] >>> 脚本放入时机不对，需要检查是否放在了aplus脚本之前，否则不生效 @ https://o.alicdn.com/1688-pc/pc-dynamic-sc/uservitals.js:5
+[    5858ms] [WARNING] Failed to execute 'postMessage' on 'DOMWindow': The target origin provided ('https://air.1688.com') does not match the recipient window's origin ('https://www.1688.com'). @ https://o.alicdn.com/1688-pc/pc-dynamic-sc/index.js:7
+[    6316ms] [ERROR] Failed to load resource: net::ERR_FAILED @ chrome-extension://invalid/:0
+[    7534ms] [ERROR] Permissions policy violation: gyroscope is not allowed in this document. @ https://g.alicdn.com/secdev/sufei_data/3.9.14/index.js:0
+[    7534ms] [ERROR] Permissions policy violation: accelerometer is not allowed in this document. @ https://g.alicdn.com/secdev/sufei_data/3.9.14/index.js:0
+[    7535ms] [WARNING] The deviceorientation events are blocked by permissions policy. See https://github.com/w3c/webappsec-permissions-policy/blob/master/features.md#sensor-features @ https://g.alicdn.com/secdev/sufei_data/3.9.14/index.js:0
+[   16191ms] [ERROR] Failed to load resource: net::ERR_FAILED @ chrome-extension://invalid/:0
+[   21892ms] [ERROR] Failed to load resource: net::ERR_FAILED @ chrome-extension://invalid/:0
+[   21944ms] [WARNING] baxia init timeout @ 03fafb8984da68.js:32
+[   24622ms] [ERROR] Permissions policy violation: gyroscope is not allowed in this document. @ https://g.alicdn.com/secdev/sufei_data/3.9.14/index.js:0
+[   24623ms] [ERROR] Permissions policy violation: accelerometer is not allowed in this document. @ https://g.alicdn.com/secdev/sufei_data/3.9.14/index.js:0
+[   24623ms] [WARNING] The deviceorientation events are blocked by permissions policy. See https://github.com/w3c/webappsec-permissions-policy/blob/master/features.md#sensor-features @ https://g.alicdn.com/secdev/sufei_data/3.9.14/index.js:0
+[   28757ms] [ERROR] Access to XMLHttpRequest at 'https://insights.1688.com/getMessage?appkey=74a6c8aaea792a851b67680a7657efc0' from origin 'https://www.1688.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ https://www.1688.com/:0
+[   28758ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://insights.1688.com/getMessage?appkey=74a6c8aaea792a851b67680a7657efc0:0
+[   35923ms] undefined
