@@ -305,6 +305,13 @@ async def run_adjustment(page):
                 new_cpc = min(current_cpc + BID_INCREASE, MAX_KEYWORD_CPC)
                 verdict = f"PR{rank}位（圏外近い）→ {new_cpc}円へ増額"
 
+            # 「キーボード」キーワードの上限を60円に制限
+            if "キーボード" in keyword:
+                if new_cpc > 60:
+                    old_verdict = verdict
+                    new_cpc = 60
+                    verdict = f"{old_verdict} ※キーボード上限60円に制限"
+
             changed = new_cpc != current_cpc
             status  = "✓" if not changed else ("→" if not TEST_MODE else "→(テスト)")
 
