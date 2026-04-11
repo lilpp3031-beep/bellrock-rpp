@@ -12,6 +12,7 @@ import json
 import sys
 import time
 import urllib.parse
+import requests
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
@@ -37,6 +38,11 @@ BID_DECREASE_RANK3   = 1          # PR3位（やや上位）: 1円減額
 
 BASE_URL         = "https://ad.rms.rakuten.co.jp"
 SEARCH_DELAY     = 1.5            # 楽天検索間隔（秒）
+
+# LINE Messaging API設定
+LINE_CHANNEL_ACCESS_TOKEN = "kYypu5k2td00KrpmWZQnPYZR14/Dg5ne8QzWI9xGhaL0z8NL8ZoBOu+hzhw63UnCoAsGeADGkYsH7IoSGNoAiwtu5nzAEYnNL7VVkWxrk18GCjGqDhV6wKG2tYhDFQfu1qY2UWMY55gsUkraHkWvwAdB04t89/1O/w1cDnyilFU="
+LINE_USER_ID     = "U296b168d90edc8f642649e7f763c5e62"
+LINE_API_URL     = "https://api.line.me/v2/bot/message/push"
 
 # ======================================================================
 
@@ -209,6 +215,34 @@ async def check_pr_rank(page, keyword: str) -> Optional[int]:
     return result
 
 
+def send_line_message(text: str) -> bool:
+    """LINE Messaging APIでメッセージを送信"""
+    try:
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}"
+        }
+        payload = {
+            "to": LINE_USER_ID,
+            "messages": [
+                {
+                    "type": "text",
+                    "text": text
+                }
+            ]
+        }
+        response = requests.post(LINE_API_URL, json=payload, headers=headers, timeout=10)
+        if response.status_code == 200:
+            print("✅ LINE通知送信成功")
+            return True
+        else:
+            print(f"⚠️  LINE通知送信失敗: {response.status_code} - {response.text}")
+            return False
+    except Exception as e:
+        print(f"⚠️  LINE通知エラー: {e}")
+        return False
+
+
 async def run_adjustment(page):
     """メイン調整ループ"""
     print(f"{'=' * 60}")
@@ -317,6 +351,25 @@ async def run_adjustment(page):
             "errors":     errors,
         }, f, ensure_ascii=False, indent=2)
     print(f"\nログ保存: {log_file}")
+
+    # ===== LINE通知 =====
+    error_msg = f"エラー: {len(errors)}件" if errors else "✅ エラーなし"
+    mode_str = "テスト実行" if TEST_MODE else "本番実行"
+
+    line_text = f"""RPP入札自動調整 実行完了
+
+実行日時: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+モード: {mode_str}
+
+📊 結果サマリー
+• 処理キーワード: {len(results)}件
+• 目標範囲内: {len(in_range)}件
+• 目標範囲外: {len(out_range)}件
+• 入札変更: {len(changed_list)}件
+
+{error_msg}"""
+
+    send_line_message(line_text)
 
 
 async def main():
