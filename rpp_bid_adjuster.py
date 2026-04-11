@@ -13,6 +13,9 @@ import sys
 import time
 import urllib.parse
 import requests
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 from typing import List, Dict, Any, Optional
 
@@ -39,10 +42,12 @@ BID_DECREASE_RANK3   = 1          # PR3位（やや上位）: 1円減額
 BASE_URL         = "https://ad.rms.rakuten.co.jp"
 SEARCH_DELAY     = 1.5            # 楽天検索間隔（秒）
 
-# LINE Messaging API設定
-LINE_CHANNEL_ACCESS_TOKEN = "pdBPGsjyU1bxVVYAZ33k1BPN0JDC337JgqKTTLuPhXDZRYKKPUkYZkcDHB6EtyHjoAsGeADGkYsH7IoSGNoAiwtu5nzAEYnNL7VVkWxrk1+nrqaiqPP0JE/ANBo/vJkg3tdUzDB3N3g8OFjpewnmvgdB04t89/1O/w1cDnyilFU="
-LINE_USER_ID     = "U296b168d90edc8f642649e7f763c5e62"
-LINE_API_URL     = "https://api.line.me/v2/bot/message/push"
+# メール通知設定
+GMAIL_ADDRESS = "lilpp3031@gmail.com"
+GMAIL_PASSWORD = "hikaru0331"
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+NOTIFICATION_EMAIL = "lilpp3031@gmail.com"
 
 # ======================================================================
 
@@ -215,35 +220,31 @@ async def check_pr_rank(page, keyword: str) -> Optional[int]:
     return result
 
 
-def send_line_message(text: str) -> bool:
-    """LINE Messaging APIでメッセージを送信"""
+def send_email_notification(subject: str, body: str) -> bool:
+    """Gmail でメール通知を送信"""
     try:
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}"
-        }
-        payload = {
-            "to": LINE_USER_ID,
-            "messages": [
-                {
-                    "type": "text",
-                    "text": text
-                }
-            ]
-        }
-        print(f"[DEBUG] LINE送信: to={LINE_USER_ID}")
-        print(f"[DEBUG] ペイロード: {json.dumps(payload, ensure_ascii=False)}")
-        response = requests.post(LINE_API_URL, json=payload, headers=headers, timeout=10)
-        if response.status_code == 200:
-            print("✅ LINE通知送信成功")
-            return True
-        else:
-            print(f"⚠️  LINE通知送信失敗: {response.status_code}")
-            print(f"[DEBUG] レスポンス: {response.text}")
-            print(f"[DEBUG] リクエストヘッダー: Content-Type={headers.get('Content-Type')}")
-            return False
+        print(f"📧 メール送信中: {NOTIFICATION_EMAIL}")
+
+        # メッセージ作成
+        msg = MIMEMultipart()
+        msg['From'] = GMAIL_ADDRESS
+        msg['To'] = NOTIFICATION_EMAIL
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain', 'utf-8'))
+
+        # SMTP接続
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(GMAIL_ADDRESS, GMAIL_PASSWORD)
+
+        # メール送信
+        server.send_message(msg)
+        server.quit()
+
+        print("✅ メール送信成功")
+        return True
     except Exception as e:
-        print(f"⚠️  LINE通知エラー: {e}")
+        print(f"⚠️  メール送信エラー: {e}")
         import traceback
         traceback.print_exc()
         return False
@@ -358,24 +359,34 @@ async def run_adjustment(page):
         }, f, ensure_ascii=False, indent=2)
     print(f"\nログ保存: {log_file}")
 
-    # ===== LINE通知 =====
+    # ===== メール通知 =====
     error_msg = f"エラー: {len(errors)}件" if errors else "✅ エラーなし"
     mode_str = "テスト実行" if TEST_MODE else "本番実行"
 
-    line_text = f"""RPP入札自動調整 実行完了
+    email_subject = f"RPP入札自動調整 実行完了 ({datetime.now().strftime('%Y-%m-%d %H:%M')})"
 
+    email_body = f"""RPP入札自動調整 実行完了
+
+【実行情報】
 実行日時: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 モード: {mode_str}
 
-📊 結果サマリー
-• 処理キーワード: {len(results)}件
-• 目標範囲内: {len(in_range)}件
-• 目標範囲外: {len(out_range)}件
-• 入札変更: {len(changed_list)}件
+【結果サマリー】
+処理キーワード: {len(results)}件
+目標範囲内（PR1～7位）: {len(in_range)}件
+目標範囲外・圏外: {len(out_range)}件
+入札変更対象: {len(changed_list)}件
 
-{error_msg}"""
+【ステータス】
+{error_msg}
 
-    send_line_message(line_text)
+【ログファイル】
+{log_file}
+
+このスクリプトは毎日 13:00 に自動実行されます。
+"""
+
+    send_email_notification(email_subject, email_body)
 
 
 async def main():
