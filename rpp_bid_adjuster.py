@@ -40,7 +40,7 @@ BASE_URL         = "https://ad.rms.rakuten.co.jp"
 SEARCH_DELAY     = 1.5            # 楽天検索間隔（秒）
 
 # LINE Messaging API設定
-LINE_CHANNEL_ACCESS_TOKEN = "kYypu5k2td00KrpmWZQnPYZR14/Dg5ne8QzWI9xGhaL0z8NL8ZoBOu+hzhw63UnCoAsGeADGkYsH7IoSGNoAiwtu5nzAEYnNL7VVkWxrk18GCjGqDhV6wKG2tYhDFQfu1qY2UWMY55gsUkraHkWvwAdB04t89/1O/w1cDnyilFU="
+LINE_CHANNEL_ACCESS_TOKEN = "pdBPGsjyU1bxVVYAZ33k1BPN0JDC337JgqKTTLuPhXDZRYKKPUkYZkcDHB6EtyHjoAsGeADGkYsH7IoSGNoAiwtu5nzAEYnNL7VVkWxrk1+nrqaiqPP0JE/ANBo/vJkg3tdUzDB3N3g8OFjpewnmvgdB04t89/1O/w1cDnyilFU="
 LINE_USER_ID     = "U296b168d90edc8f642649e7f763c5e62"
 LINE_API_URL     = "https://api.line.me/v2/bot/message/push"
 
