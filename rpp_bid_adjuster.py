@@ -42,6 +42,19 @@ BID_DECREASE_RANK3   = 1          # PR3位（やや上位）: 1円減額
 BASE_URL         = "https://ad.rms.rakuten.co.jp"
 SEARCH_DELAY     = 1.5            # 楽天検索間隔（秒）
 
+# 商品ごとのCPC上限設定
+# キー：商品ID（itemMngId）、値：その商品の全キーワードに適用する上限CPC
+PRODUCT_CPC_LIMITS = {
+    "compass1770694157": 80,  # シートクッション - 段階的増額テスト（全キーワード対象）
+    "compass1768890284": 60,  # 植物育成ライト - 販促見込み（全キーワード対象）
+}
+
+# キーワード個別CPC上限設定
+# 0 = 広告停止、数値 = その金額が上限、指定なし = 制限なし
+KEYWORD_CPC_LIMITS = {
+    "マウス 手首": 0,  # 広告停止（2週間以上かけても効果なし）
+}
+
 # メール通知設定
 GMAIL_ADDRESS = "lilpp3031@gmail.com"
 GMAIL_PASSWORD = "hikaru0331"
@@ -274,7 +287,7 @@ async def run_adjustment(page):
         keywords = await get_keywords(page, item_id)
 
         for kw in keywords:
-            keyword      = kw["keyword"]
+            keyword      = kw["keyword"].strip()  # 前後の空白を削除
             current_cpc  = kw["cpc"]
             rec_cpc      = kw.get("recommendationCpc", current_cpc)
             keyword_hash = kw["keywordHash"]
@@ -305,15 +318,31 @@ async def run_adjustment(page):
                 new_cpc = min(current_cpc + BID_INCREASE, MAX_KEYWORD_CPC)
                 verdict = f"PR{rank}位（圏外近い）→ {new_cpc}円へ増額"
 
-            # 「キーボード」キーワードの上限を60円に制限
-            if "キーボード" in keyword:
-                if new_cpc > 60:
+            # CPC上限を適用（商品単位 → キーワード単位の優先順）
+            limit = None
+
+            # 1. 商品ごとのCPC上限を確認
+            if item_mng_id in PRODUCT_CPC_LIMITS:
+                limit = PRODUCT_CPC_LIMITS[item_mng_id]
+
+            # 2. キーワード個別CPC上限を確認（商品単位の設定を上書き）
+            if keyword in KEYWORD_CPC_LIMITS:
+                limit = KEYWORD_CPC_LIMITS[keyword]
+
+            # 上限を適用
+            if limit is not None:
+                if limit == 0:
+                    # 広告停止（調整対象外）
+                    verdict = "⏹ 広告停止中（調整対象外）"
+                    new_cpc = current_cpc  # 変更なしとして処理
+                elif new_cpc > limit:
+                    # 上限に達したため制限
                     old_verdict = verdict
-                    new_cpc = 60
-                    verdict = f"{old_verdict} ※キーボード上限60円に制限"
+                    new_cpc = limit
+                    verdict = f"{old_verdict} ※上限{limit}円に制限"
 
             changed = new_cpc != current_cpc
-            status  = "✓" if not changed else ("→" if not TEST_MODE else "→(テスト)")
+            status  = "⏹" if (keyword in KEYWORD_CPC_LIMITS and KEYWORD_CPC_LIMITS[keyword] == 0) else ("✓" if not changed else ("→" if not TEST_MODE else "→(テスト)"))
 
             print(f"  {status} [{keyword}] CPC:{current_cpc}円 / 推奨:{rec_cpc}円  {verdict}")
 
