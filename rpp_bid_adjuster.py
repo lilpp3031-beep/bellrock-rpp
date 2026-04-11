@@ -231,15 +231,21 @@ def send_line_message(text: str) -> bool:
                 }
             ]
         }
+        print(f"[DEBUG] LINE送信: to={LINE_USER_ID}")
+        print(f"[DEBUG] ペイロード: {json.dumps(payload, ensure_ascii=False)}")
         response = requests.post(LINE_API_URL, json=payload, headers=headers, timeout=10)
         if response.status_code == 200:
             print("✅ LINE通知送信成功")
             return True
         else:
-            print(f"⚠️  LINE通知送信失敗: {response.status_code} - {response.text}")
+            print(f"⚠️  LINE通知送信失敗: {response.status_code}")
+            print(f"[DEBUG] レスポンス: {response.text}")
+            print(f"[DEBUG] リクエストヘッダー: Content-Type={headers.get('Content-Type')}")
             return False
     except Exception as e:
         print(f"⚠️  LINE通知エラー: {e}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
