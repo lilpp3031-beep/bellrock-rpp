@@ -734,7 +734,27 @@ function downloadXlsx() {
     if (!g.fields.itemCode) errors.push('グループ' + g.id + ': 取扱品目コードが空です');
     if (!g.fields.gpc) errors.push('グループ' + g.id + ': GPCコードが空です');
     if (!g.fields.qty) errors.push('グループ' + g.id + ': 内容量が空です');
-    if (g.variants.length === 0) errors.push('グループ' + g.id + ': バリエーションが0件です');
+    // バリエーション0件の場合はSKU1として自動追加
+    if (g.variants.length === 0) {
+      if (!selectedGs1) {
+        errors.push('グループ' + g.id + ': GS1事業者コードを選択してください');
+      } else {
+        g.variantCounter++;
+        const vid = g.id + 'v' + g.variantCounter;
+        const jan = generateJan(selectedGs1);
+        const v = { id: vid, num: g.variantCounter, color:'', size:'', jan: jan||'', sku:'', detail:'', detailEdited: false };
+        g.variants.push(v);
+        // UIにも反映
+        const tbody = document.getElementById('variants-' + g.id);
+        if (tbody) {
+          const tr = document.createElement('tr');
+          tr.id = 'vrow-' + vid;
+          tr.innerHTML = buildVariantRow(g.id, v);
+          tbody.appendChild(tr);
+        }
+        updateVariantCount(g.id);
+      }
+    }
     for (let vi = 0; vi < g.variants.length; vi++) {
       const v = g.variants[vi];
       if (!v.jan || v.jan.length !== 13) errors.push('グループ' + g.id + ' バリエーション' + v.num + ': JANが13桁ではありません（' + v.jan + '）');
