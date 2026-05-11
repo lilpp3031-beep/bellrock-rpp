@@ -226,12 +226,21 @@ function hiraganaToKatakana(str) {
   return str.replace(/[\\u3041-\\u3096]/g, c => String.fromCharCode(c.charCodeAt(0) + 0x60));
 }
 
+function sanitizeKana(s) {
+  // kuromoji が全角数字等に返す制御文字（\x00-\x1f, \x7f-\x9f）を除去
+  if (!s) return '';
+  return s.replace(/[\x00-\x1f\x7f-\x9f]/g, '');
+}
+
 function nameToKana(str) {
   if (!str) return '';
   if (kuromojiTokenizer) {
     try {
       const tokens = kuromojiTokenizer.tokenize(str);
-      return tokens.map(t => t.reading || hiraganaToKatakana(t.surface_form)).join('');
+      return tokens.map(function(t) {
+        const reading = sanitizeKana(t.reading || '');
+        return reading || hiraganaToKatakana(t.surface_form);
+      }).join('');
     } catch(e) {}
   }
   return hiraganaToKatakana(str);
