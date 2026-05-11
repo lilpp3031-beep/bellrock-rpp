@@ -102,7 +102,9 @@ table.variant-table td input.not-mono{font-family:inherit}
           <div class="tag-list" id="gs1-list"></div>
           <div style="margin-top:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
             <span style="font-size:12px;color:#555">次のJAN番号：<b id="next-jan-text">—</b></span>
-            <button class="btn btn-outline btn-sm" onclick="editCounter()">✏ カウンター変更</button>
+            <button class="btn btn-outline btn-sm" onclick="editCounter()">✏ 手動変更</button>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('gs1-sync-file').click()">↑ GS1リストから同期</button>
+            <input type="file" id="gs1-sync-file" accept=".xlsx,.xls" style="display:none" onchange="syncCounterFromGs1List(this)">
           </div>
         </div>
         <div>
@@ -387,6 +389,69 @@ function editCounter() {
       showAlert('有効な数値を入力してください');
     }
   }
+}
+
+function syncCounterFromGs1List(input) {
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
+
+      // GTIN列を探す（1行目ヘッダー）
+      const headerRow = rows[0] || [];
+      const gtinCol = headerRow.indexOf('GTIN');
+      if (gtinCol === -1) {
+        showAlert('GTINカラムが見つかりません。GS1からダウンロードした商品リストを選択してください', 'error');
+        input.value = '';
+        return;
+      }
+
+      // 全プレフィックスのカウンター最大値を集計
+      const maxCounters = {};
+      for (let i = 1; i < rows.length; i++) {
+        const gtin = String(rows[i][gtinCol] || '').trim();
+        if (gtin.length !== 13) continue;
+        // 登録済みのGS1コードと照合
+        for (let j = 0; j < gs1List.length; j++) {
+          const prefix = gs1List[j];
+          if (gtin.startsWith(prefix)) {
+            const padLen = 12 - prefix.length;
+            const counterStr = gtin.substring(prefix.length, prefix.length + padLen);
+            const counter = parseInt(counterStr);
+            if (!isNaN(counter)) {
+              if (!maxCounters[prefix] || counter > maxCounters[prefix]) {
+                maxCounters[prefix] = counter;
+              }
+            }
+          }
+        }
+      }
+
+      if (Object.keys(maxCounters).length === 0) {
+        showAlert('登録済みGTINが見つかりませんでした。ツールに事業者コードを先に登録してください', 'error');
+        input.value = '';
+        return;
+      }
+
+      // 各プレフィックスのカウンターをmax+1に更新
+      let msg = [];
+      for (const prefix in maxCounters) {
+        const next = maxCounters[prefix] + 1;
+        localStorage.setItem('jan_counter_' + prefix, next);
+        msg.push(prefix + ' → カウンター ' + next + '（' + maxCounters[prefix] + '件登録済み）');
+      }
+      updateJanDisplay();
+      showAlert('カウンターを同期しました:<br>' + msg.join('<br>'), 'success');
+      log('GS1リスト同期完了: ' + msg.join(', '));
+    } catch(ex) {
+      showAlert('ファイルの読み込みに失敗しました: ' + ex.message, 'error');
+    }
+    input.value = '';
+  };
+  reader.readAsArrayBuffer(input.files[0]);
 }
 
 function importJanFromXlsx() {
