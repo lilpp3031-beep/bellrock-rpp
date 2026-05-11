@@ -160,9 +160,19 @@ def generate_xlsx(payload):
             size  = to_full_width(v.get('size', ''))
             spec  = '　'.join(filter(None, [color, size]))
             final_name = product_name + ('　' + spec if spec else '')
-            raw_detail = v.get('detail', '') if v.get('detailEdited') else \
-                '　'.join(filter(None, [brand, product_name, color, size]))
-            detail = to_full_width(raw_detail)
+            brand_fw = to_full_width(brand)
+
+            if v.get('detailEdited'):
+                detail = to_full_width(v.get('detail', ''))
+                # 詳細に大文字のブランド名が含まれない場合、小文字版を試みる
+                # （ユーザーが小文字で入力した場合の対応）
+                if brand_fw and brand_fw not in detail:
+                    brand_lower_fw = to_full_width(brand.lower())
+                    if brand_lower_fw in detail:
+                        brand_fw = brand_lower_fw
+            else:
+                detail = to_full_width('　'.join(filter(None, [brand, product_name, color, size])))
+
             jan = v.get('jan', '')
             sku = v.get('sku', '')
 
@@ -172,7 +182,7 @@ def generate_xlsx(payload):
                 s_cell(row_num, 'GS1事業者コード', selected_gs1),
                 s_cell(row_num, '商品名', final_name),
                 s_cell(row_num, '商品名（カナ）', fix_kana(fields.get('nameKana', ''))),
-                s_cell(row_num, 'ブランド名', to_full_width(brand)),
+                s_cell(row_num, 'ブランド名', brand_fw),
                 s_cell(row_num, '内容量単位名称', fields.get('qtyUnit', '個')),
                 s_cell(row_num, '内容量単位コード', '001'),
                 s_cell(row_num, '表示用規格', spec),
