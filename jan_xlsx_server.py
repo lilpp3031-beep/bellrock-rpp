@@ -48,19 +48,42 @@ def generate_xlsx(payload):
     wb = openpyxl.load_workbook(TEMPLATE_PATH)
     ws = wb['商品情報リスト']
 
+    def to_full_width(text):
+        """半角英数記号→全角、半角スペース→全角スペース"""
+        if not text: return ''
+        result = []
+        for c in text:
+            code = ord(c)
+            if 0x21 <= code <= 0x7E:        # 半角英数記号
+                result.append(chr(code + 0xFEE0))
+            elif c == ' ':                   # 半角スペース
+                result.append('　')
+            else:
+                result.append(c)
+        return ''.join(result)
+
+    def fix_kana(text):
+        """カナ文字列の正規化：制御文字除去・半角スペース→全角・100文字以内"""
+        if not text: return ''
+        import re
+        text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', text)  # 制御文字除去
+        text = text.replace(' ', '　')                   # 半角スペース→全角
+        return text[:100]                                     # 100文字以内
+
     row = 4  # データは4行目から
     for g in groups:
         brand = g.get('fields', {}).get('brandCustom') or g.get('fields', {}).get('brand', '')
-        product_name = g.get('name', '').strip()
+        product_name = to_full_width(g.get('name', '').strip())
         fields = g.get('fields', {})
 
         for v in g.get('variants', []):
-            color = v.get('color', '')
-            size  = v.get('size', '')
-            spec  = ' '.join(filter(None, [color, size]))
-            # 全角スペースで結合
+            color = to_full_width(v.get('color', ''))
+            size  = to_full_width(v.get('size', ''))
+            spec  = '　'.join(filter(None, [color, size]))
             final_name = product_name + ('　' + spec if spec else '')
-            detail = v.get('detail', '') if v.get('detailEdited') else ' '.join(filter(None, [brand, product_name, color, size]))
+            raw_detail = v.get('detail', '') if v.get('detailEdited') else \
+                '　'.join(filter(None, [brand, product_name, color, size]))
+            detail = to_full_width(raw_detail)
             jan  = v.get('jan', '')
             sku  = v.get('sku', '')
 
@@ -79,7 +102,7 @@ def generate_xlsx(payload):
             s('GTIN', jan)
             s('GS1事業者コード', selected_gs1)
             s('商品名', final_name)
-            s('商品名（カナ）', fields.get('nameKana', ''))
+            s('商品名（カナ）', fix_kana(fields.get('nameKana', '')))
             if fields.get('itemCode'): n('取扱品目コード', fields['itemCode'])
             if fields.get('gpc'):      n('GPC（GS1商品分類）コード', fields['gpc'])
             if fields.get('jicfs'):    n('JICFS分類コード', fields['jicfs'])
@@ -98,7 +121,7 @@ def generate_xlsx(payload):
             s('オープン価格フラグ', '1')
             s('原産国（地域）コード', fields.get('origin', '156'))
             s('販売対象国（地域）コード', '392')
-            s('言語コード1', '01')
+            # 言語コード1は設定しない（URLなしで設定するとGS1エラーになるため）
 
             row += 1
 
