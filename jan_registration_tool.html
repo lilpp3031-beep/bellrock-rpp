@@ -357,7 +357,7 @@ function renderGs1List() {
 
 function updateJanDisplay() {
   const el = document.getElementById('next-jan-text');
-  el.textContent = selectedGs1 ? previewNextJan(selectedGs1) : '—';
+  if (el) el.textContent = selectedGs1 ? previewNextJan(selectedGs1) : '—';
 }
 
 function editCounter() {
