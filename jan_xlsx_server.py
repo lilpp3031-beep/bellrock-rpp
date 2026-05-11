@@ -147,18 +147,27 @@ def generate_xlsx(payload):
         sheet_xml = sheet_xml_bytes.decode('utf-8')
         ss_xml    = ss_xml_bytes.decode('utf-8')
 
-        # 既存sharedStringsのテキストを順番通りに取得（実体参照をデコード）
+        # 全<si>エントリを走査してテキスト→実際のインデックスのマップを作成
+        # （<si><r><t>形式の複合エントリも正しくカウントする）
         import html as _html
-        ss_texts = [_html.unescape(t) for t in _re.findall(r'<si><t[^>]*>([^<]*)</t></si>', ss_xml)]
-        new_si_entries = []  # 追加分
+        si_all = _re.findall(r'<si>(.*?)</si>', ss_xml, _re.DOTALL)
+        ss_total = len(si_all)  # 既存エントリの実際の総数
+        ss_text_to_idx = {}     # decoded text → actual sharedStrings index
+        for i, si in enumerate(si_all):
+            texts = _re.findall(r'<t[^>]*>([^<]*)</t>', si)
+            combined = _html.unescape(''.join(texts))
+            if combined and combined not in ss_text_to_idx:
+                ss_text_to_idx[combined] = i
+
+        new_si_entries = []  # 追加分（新規テキストのみ）
 
         def get_or_add(text):
-            if text in ss_texts:
-                return ss_texts.index(text)
+            if text in ss_text_to_idx:
+                return ss_text_to_idx[text]
             if text in new_si_entries:
-                return len(ss_texts) + new_si_entries.index(text)
+                return ss_total + new_si_entries.index(text)
             new_si_entries.append(text)
-            return len(ss_texts) + len(new_si_entries) - 1
+            return ss_total + len(new_si_entries) - 1
 
         def replace_cell(m):
             c_tag    = m.group(1)   # <c r="X4" ...
@@ -182,7 +191,7 @@ def generate_xlsx(payload):
         )
 
         # sharedStrings に追記して count/uniqueCount 更新
-        total = len(ss_texts) + len(new_si_entries)
+        total = ss_total + len(new_si_entries)
         ss_fixed = _re.sub(r'(count=")[^"]*(")', f'\\g<1>{total}\\2', ss_xml)
         ss_fixed = _re.sub(r'(uniqueCount=")[^"]*(")', f'\\g<1>{total}\\2', ss_fixed)
         new_si_xml = ''.join(
