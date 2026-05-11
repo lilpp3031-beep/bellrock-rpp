@@ -769,66 +769,36 @@ function downloadXlsx() {
   if (!selectedGs1) { showAlert('GS1事業者コードを選択してください', 'error'); return; }
   if (groups.length === 0) { showAlert('商品グループが0件です', 'error'); return; }
 
-  try {
-    const wb = XLSX.read(TEMPLATE_B64, {type:'base64'});
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    let rowIdx = 3;
+  // Pythonサーバー(port 8082)にPOSTしてopenpyxlで生成されたファイルをダウンロード
+  const payload = JSON.stringify({ groups: groups, selectedGs1: selectedGs1 });
+  showAlert('Excel生成中...', 'info');
 
-    for (let gi = 0; gi < groups.length; gi++) {
-      const g = groups[gi];
-      const brand = g.fields.brandCustom || g.fields.brand || '';
-      const productName = g.name.trim();
-
-      for (let vi = 0; vi < g.variants.length; vi++) {
-        const v = g.variants[vi];
-        const color = v.color || '';
-        const size = v.size || '';
-        const spec = [color, size].filter(Boolean).join(' ');
-        const finalName = productName + (spec ? '\\u3000' + spec : '');
-        const detailText = v.detailEdited && v.detail ? v.detail : [brand, productName, color, size].filter(Boolean).join(' ');
-        const sku = v.sku || '';
-        const jan = v.jan;
-
-        function set(headerName, value, type) {
-          try { setCell(ws, rowIdx, colIndex(headerName), value, type); } catch(e2) { log('Warning: ' + e2.message); }
-        }
-
-        set('GTINステータスコード', '02', 's');
-        set('GTIN', jan, 's');
-        set('GS1事業者コード', selectedGs1, 's');
-        set('商品名', toFullWidth(finalName), 's');
-        set('商品名（カナ）', g.fields.nameKana || '', 's');
-        if (g.fields.itemCode) set('取扱品目コード', parseInt(g.fields.itemCode), 'n');
-        if (g.fields.gpc) set('GPC（GS1商品分類）コード', parseInt(g.fields.gpc), 'n');
-        if (g.fields.jicfs) set('JICFS分類コード', parseInt(g.fields.jicfs), 'n');
-        set('ブランド名', brand, 's');
-        if (g.fields.qty) set('内容量', parseFloat(g.fields.qty), 'n');
-        set('内容量単位名称', g.fields.qtyUnit || '個', 's');
-        set('内容量単位コード', '001', 's');
-        set('表示用規格', toFullWidth(spec), 's');
-        set('商品名（詳細）', toFullWidth(detailText), 's');
-        set('消費者向け区分', g.fields.consumer || '1', 's');
-        if (sku) set('自社商品コード', sku, 's');
-        set('オープン価格フラグ', '1', 's');
-        set('原産国（地域）コード', g.fields.origin || '156', 's');
-        set('販売対象国（地域）コード', '392', 's');
-        set('言語コード1', '01', 's');
-
-        rowIdx++;
-      }
-    }
-
-    ws['!ref'] = 'A1:BQ' + rowIdx;
+  fetch('http://localhost:8082/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: payload
+  })
+  .then(function(res) {
+    if (!res.ok) return res.text().then(function(t){ throw new Error(t); });
+    return res.blob();
+  })
+  .then(function(blob) {
     const today = new Date();
     const ds = today.getFullYear() + ('0'+(today.getMonth()+1)).slice(-2) + ('0'+today.getDate()).slice(-2);
-    XLSX.writeFile(wb, 'gjdb_product_upload_' + ds + '.xlsx');
-    showAlert('ダウンロード完了（' + (rowIdx-3) + '件）', 'success');
-    log('XLSX生成完了: ' + (rowIdx-3) + '件');
-  } catch(ex) {
-    showAlert('XLSXの生成に失敗しました: ' + ex.message, 'error');
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'gjdb_product_upload_' + ds + '.xlsx';
+    a.click();
+    URL.revokeObjectURL(url);
+    const count = groups.reduce(function(s,g){ return s + g.variants.length; }, 0);
+    showAlert('ダウンロード完了（' + count + '件）', 'success');
+    log('XLSX生成完了: ' + count + '件');
+  })
+  .catch(function(ex) {
+    showAlert('Excel生成サーバーに接続できません。ターミナルで以下を実行してください:<br><code>python3 ~/pathbright-HP/jan_xlsx_server.py</code>', 'error');
     log('Error: ' + ex.message);
     console.error(ex);
-  }
+  });
 }
 
 // ================================================================
