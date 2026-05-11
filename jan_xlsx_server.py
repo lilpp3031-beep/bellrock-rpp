@@ -106,7 +106,7 @@ def generate_xlsx(payload):
             if fields.get('itemCode'): n('取扱品目コード', fields['itemCode'])
             if fields.get('gpc'):      n('GPC（GS1商品分類）コード', fields['gpc'])
             if fields.get('jicfs'):    n('JICFS分類コード', fields['jicfs'])
-            s('ブランド名', brand)
+            s('ブランド名', to_full_width(brand))
             if fields.get('qty'):
                 try:
                     ws.cell(row=row, column=col('内容量')).value = float(fields['qty'])
@@ -130,8 +130,69 @@ def generate_xlsx(payload):
     wb.save(tmp)
     tmp.seek(0)
 
-    # 元テンプレートから欠落ファイルをコピーして完全なxlsxに再構築
-    import zipfile
+    # inlineStr → sharedStrings 変換 + テンプレートファイル補完
+    import zipfile, xml.etree.ElementTree as ET
+
+    def escape_xml(text):
+        return text.replace('&','&amp;').replace('<','&lt;').replace('>','&gt;').replace('"','&quot;')
+
+    def convert_inline_to_shared(sheet_xml_bytes, ss_xml_bytes):
+        """
+        openpyxlが書いたinlineStr(t="inlineStr")セルをsharedStrings参照(t="s")に変換。
+        GS1のバリデーターがinlineStrを正しく扱えないケースへの対応。
+        文字列操作で行い、ElementTreeのnamespace問題を回避。
+        """
+        import re as _re
+
+        sheet_xml = sheet_xml_bytes.decode('utf-8')
+        ss_xml    = ss_xml_bytes.decode('utf-8')
+
+        # 既存sharedStringsのテキストを順番通りに取得（実体参照をデコード）
+        import html as _html
+        ss_texts = [_html.unescape(t) for t in _re.findall(r'<si><t[^>]*>([^<]*)</t></si>', ss_xml)]
+        new_si_entries = []  # 追加分
+
+        def get_or_add(text):
+            if text in ss_texts:
+                return ss_texts.index(text)
+            if text in new_si_entries:
+                return len(ss_texts) + new_si_entries.index(text)
+            new_si_entries.append(text)
+            return len(ss_texts) + len(new_si_entries) - 1
+
+        def replace_cell(m):
+            c_tag    = m.group(1)   # <c r="X4" ...
+            is_block = m.group(2)   # <is><t>...</t></is>
+            t_match  = _re.search(r'<t[^>]*>([^<]*)</t>', is_block)
+            if not t_match:
+                return m.group(0)
+            raw = t_match.group(1)
+            # XML実体参照をデコード（数値参照 &#NNNN; も含む）
+            import html as _html
+            text = _html.unescape(raw)
+            idx  = get_or_add(text)
+            # t="inlineStr" → t="s"
+            new_c = _re.sub(r'\bt="inlineStr"', 't="s"', c_tag)
+            return f'{new_c}<v>{idx}</v></c>'
+
+        # <c ... t="inlineStr"><is><t>...</t></is></c> を置換
+        sheet_fixed = _re.sub(
+            r'(<c [^>]*t="inlineStr"[^>]*>)\s*(<is>.*?</is>)\s*</c>',
+            replace_cell, sheet_xml, flags=_re.DOTALL
+        )
+
+        # sharedStrings に追記して count/uniqueCount 更新
+        total = len(ss_texts) + len(new_si_entries)
+        ss_fixed = _re.sub(r'(count=")[^"]*(")', f'\\g<1>{total}\\2', ss_xml)
+        ss_fixed = _re.sub(r'(uniqueCount=")[^"]*(")', f'\\g<1>{total}\\2', ss_fixed)
+        new_si_xml = ''.join(
+            f'<si><t xml:space="preserve">{escape_xml(t)}</t></si>'
+            for t in new_si_entries
+        )
+        ss_fixed = ss_fixed.replace('</sst>', new_si_xml + '</sst>')
+
+        return sheet_fixed.encode('utf-8'), ss_fixed.encode('utf-8')
+
     result = io.BytesIO()
     with zipfile.ZipFile(tmp, 'r') as gen_zip, \
          zipfile.ZipFile(TEMPLATE_PATH, 'r') as tmpl_zip, \
@@ -140,13 +201,26 @@ def generate_xlsx(payload):
         gen_names = set(gen_zip.namelist())
         tmpl_names = set(tmpl_zip.namelist())
 
-        # 生成ファイルの全エントリを書き込む
+        # inlineStr→shared変換
+        sheet1_xml = gen_zip.read('xl/worksheets/sheet1.xml')
+        ss_xml     = gen_zip.read('xl/sharedStrings.xml') if 'xl/sharedStrings.xml' in gen_names \
+                     else tmpl_zip.read('xl/sharedStrings.xml')
+        sheet1_fixed, ss_fixed = convert_inline_to_shared(sheet1_xml, ss_xml)
+
         for name in gen_zip.namelist():
-            out_zip.writestr(name, gen_zip.read(name))
+            if name == 'xl/worksheets/sheet1.xml':
+                out_zip.writestr(name, sheet1_fixed)
+            elif name == 'xl/sharedStrings.xml':
+                out_zip.writestr(name, ss_fixed)
+            else:
+                out_zip.writestr(name, gen_zip.read(name))
 
         # 元テンプレートにあって生成ファイルに無いものをコピー
         for name in tmpl_names - gen_names:
-            out_zip.writestr(name, tmpl_zip.read(name))
+            if name == 'xl/sharedStrings.xml':
+                out_zip.writestr(name, ss_fixed)  # 変換済みを使用
+            else:
+                out_zip.writestr(name, tmpl_zip.read(name))
 
     return result.getvalue(), row - 4  # bytesと件数
 
