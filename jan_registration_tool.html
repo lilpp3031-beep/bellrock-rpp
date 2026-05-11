@@ -244,11 +244,12 @@ function calcCheck(jan12) {
 }
 
 function generateJan(gs1prefix) {
+  const padLen = 12 - gs1prefix.length;
+  if (padLen < 1 || padLen > 9) { log('JANプレフィックス長エラー: ' + gs1prefix); return null; }
   const key = 'jan_counter_' + gs1prefix;
   let counter = parseInt(localStorage.getItem(key) || '1');
-  const padded = String(counter).padStart(5, '0');
+  const padded = String(counter).padStart(padLen, '0');
   const jan12 = gs1prefix + padded;
-  if (jan12.length !== 12) { log('JANプレフィックス長エラー: ' + gs1prefix); return null; }
   const check = calcCheck(jan12);
   const jan13 = jan12 + check;
   counter++;
@@ -259,11 +260,12 @@ function generateJan(gs1prefix) {
 
 function previewNextJan(gs1prefix) {
   if (!gs1prefix) return '—';
+  const padLen = 12 - gs1prefix.length;
+  if (padLen < 1 || padLen > 9) return '(プレフィックス長確認)';
   const key = 'jan_counter_' + gs1prefix;
   const counter = parseInt(localStorage.getItem(key) || '1');
-  const padded = String(counter).padStart(5, '0');
+  const padded = String(counter).padStart(padLen, '0');
   const jan12 = gs1prefix + padded;
-  if (jan12.length !== 12) return '(プレフィックス長確認)';
   const check = calcCheck(jan12);
   return jan12 + check;
 }
