@@ -60,6 +60,13 @@ table.variant-table td input.not-mono{font-family:inherit}
 .alert-warn{background:#fffbf0;border:1px solid #ffd580;color:#7d5200}
 .alert-error{background:#fff5f5;border:1px solid #feb2b2;color:#c53030}
 .alert-success{background:#f0fff4;border:1px solid #9ae6b4;color:#276749}
+#toast-zone{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;min-width:280px;max-width:90vw}
+.toast{padding:12px 20px;border-radius:8px;font-size:14px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.18);opacity:0;transform:translateY(-12px);transition:opacity .2s,transform .2s;pointer-events:auto}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.warn{background:#fffbf0;border:1px solid #ffd580;color:#7d5200}
+.toast.error{background:#fff0f0;border:1px solid #feb2b2;color:#c53030}
+.toast.success{background:#f0fff4;border:1px solid #9ae6b4;color:#276749}
+.toast.info{background:#ebf8ff;border:1px solid #90cdf4;color:#2b6cb0}
 .divider{width:1px;height:20px;background:#ccc;margin:0 4px}
 .input-addon{display:flex;gap:6px;align-items:center}
 .qty-row{display:flex;gap:8px}
@@ -71,6 +78,7 @@ table.variant-table td input.not-mono{font-family:inherit}
 </style>
 </head>
 <body>
+<div id="toast-zone"></div>
 <header>
   <div>
     <h1>JAN一括登録ツール</h1>
@@ -105,6 +113,8 @@ table.variant-table td input.not-mono{font-family:inherit}
             <button class="btn btn-outline btn-sm" onclick="editCounter()">✏ 手動変更</button>
             <button class="btn btn-outline btn-sm" onclick="document.getElementById('gs1-sync-file').click()">↑ GS1リストから同期</button>
             <input type="file" id="gs1-sync-file" accept=".xlsx,.xls" style="display:none" onchange="syncCounterFromGs1List(this)">
+            <button class="btn btn-sm" style="background:#e53e3e;color:#fff;border:none;border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px" onclick="document.getElementById('error-fix-file').click()">🔧 エラーファイルから自動修正</button>
+            <input type="file" id="error-fix-file" accept=".xlsx,.xls" style="display:none" onchange="fixCounterFromErrorFile(this)">
           </div>
         </div>
         <div>
@@ -135,6 +145,19 @@ table.variant-table td input.not-mono{font-family:inherit}
   <div id="log-area"></div>
 </div>
 
+<!-- Amazon出品情報セクション -->
+<div style="max-width:1200px;margin:32px auto 0;padding:0 20px 40px">
+  <div style="border-top:3px solid #ff9900;padding-top:20px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+    <span style="font-size:20px;font-weight:bold;color:#1a3c5e">Amazon 出品情報</span>
+    <button class="btn btn-sm" onclick="addAmazonGroup()" style="background:#ff9900;color:#fff;border:none;font-size:13px;padding:6px 14px">+ 商品グループを追加</button>
+    <div style="flex:1"></div>
+    <button class="btn" onclick="downloadAmazonXlsx('planter')" style="font-size:13px;padding:8px 20px;background:#ff9900;color:#fff;border:none;border-radius:4px;font-weight:bold;cursor:pointer">
+      &#x2B07; PLANTER テンプレート出力
+    </button>
+  </div>
+  <div id="amazon-groups"></div>
+</div>
+
 <script>
 // ================================================================
 // EMBEDDED TEMPLATE BASE64
@@ -149,12 +172,13 @@ const CATEGORY_DB = [
   { name: '腰道具・工具ホルダー',        seg: '工具',      kw: ['腰道具','ホルダー','フッカー','テープホルダー','ベルトフック','工具差し','釘袋','チェーン'],    gpc: '10003185', jicfs: '250197', item: '304' },
   { name: 'テープ・梱包材',              seg: '工具',      kw: ['テープ','ビニールテープ','養生テープ','梱包','ガムテープ','マスキング'],                       gpc: '10003091', jicfs: '250197', item: '304' },
   { name: '窓・鍵・防犯用品',            seg: '工具',      kw: ['窓','ロック','補助錠','防犯','サッシ','鍵'],                                                 gpc: '10003185', jicfs: '259797', item: '304' },
-  { name: 'シートクッション・カーグッズ', seg: '車両',      kw: ['シートクッション','カーグッズ','車用','シート','ドライブ','トラック','カーテン','仮眠'],         gpc: '10005913', jicfs: '530907', item: '308' },
+  { name: 'シートクッション・カーグッズ', seg: '車両',      kw: ['シートクッション','カーグッズ','車用','シート','ドライブ','トラック','カーテン','仮眠','カー用品','車用品','カーアクセサリー','カーマット','車載','カーケア'],  gpc: '10005913', jicfs: '530907', item: '308' },
   { name: 'スマホスタンド・車載ホルダー', seg: '車両',      kw: ['スマホスタンド','車載','ホルダー','スマートフォンスタンド'],                                   gpc: '10005913', jicfs: '431607', item: '308' },
   { name: 'ペット用品・猫用品',          seg: 'ペット',     kw: ['猫','ペット','ハンモック','爪とぎ','キャットタワー','猫砂','猫用','ペット用'],                  gpc: '10001263', jicfs: '262203', item: '305' },
   { name: 'ペットフード',                seg: 'ペット',     kw: ['ドッグフード','キャットフード','ペットフード','犬のエサ','猫のエサ'],                           gpc: '10001261', jicfs: '262203', item: '305' },
   { name: 'シーツ・寝具カバー',          seg: '家庭用品',   kw: ['シーツ','寝具','布団カバー','枕カバー','ベッドパッド','マットレスカバー'],                      gpc: '10003091', jicfs: '530397', item: '303' },
   { name: '日用雑貨・生活用品',          seg: '家庭用品',   kw: ['日用雑貨','生活用品','雑貨','インテリア','収納','整理','ボックス','ラック'],                    gpc: '10003145', jicfs: '431607', item: '301' },
+  { name: '掃除・清掃用品',              seg: '家庭用品',   kw: ['掃除','清掃','クリーナー','ほうき','モップ','雑巾','洗剤','除菌','クロス','ハンディ','ゴミ箱','ちりとり','スポンジ'],  gpc: '10003145', jicfs: '431607', item: '301' },
   { name: 'ヘッドフォン・イヤフォン・カバー', seg: '家電',  kw: ['ヘッドフォン','イヤフォン','イヤホン','ヘッドホン','headphone','イヤーパッド','ヘッドホンカバー'], gpc: '10005043', jicfs: '461110', item: '406' },
   { name: 'エアコン・空調用品',          seg: '家電',       kw: ['エアコン','空調','室外機','防振','エアコン用'],                                               gpc: '10003162', jicfs: '462197', item: '406' },
   { name: '照明・LED',                  seg: '家電',       kw: ['照明','ライト','ランプ','LED','電球','間接照明'],                                              gpc: '10003162', jicfs: '462197', item: '406' },
@@ -172,9 +196,11 @@ const CATEGORY_DB = [
   { name: 'Tシャツ・アパレル',          seg: 'アパレル',    kw: ['Tシャツ','カットソー','トップス','シャツ','パンツ','ジャケット','コート','アウター','ポロシャツ'], gpc: '10005558', jicfs: '519797', item: '501' },
   { name: 'スニーカー・靴',             seg: 'アパレル',    kw: ['スニーカー','シューズ','ランニング','ブーツ','サンダル','スリッポン'],                           gpc: '10005622', jicfs: '550656', item: '505' },
   { name: 'バッグ・財布',               seg: 'アパレル',    kw: ['バッグ','リュック','トートバッグ','ショルダー','財布','ウォレット','ポーチ'],                    gpc: '10004569', jicfs: '540697', item: '506' },
-  { name: 'フィットネス・スポーツ',      seg: 'スポーツ',    kw: ['フィットネス','筋トレ','ダンベル','ヨガ','キャンプ','アウトドア','テント','ランニング'],         gpc: '10005838', jicfs: '569797', item: '507' },
+  { name: 'フィットネス・スポーツ',      seg: 'スポーツ',    kw: ['フィットネス','筋トレ','ダンベル','ヨガ','キャンプ','アウトドア','テント','ランニング','スポーツ用品','スポーツグッズ','スポーツ'],  gpc: '10005838', jicfs: '569797', item: '507' },
   { name: 'おもちゃ・ぬいぐるみ',        seg: 'おもちゃ',    kw: ['おもちゃ','玩具','toy','ぬいぐるみ','人形','フィギュア','プラモデル'],                         gpc: '10006023', jicfs: '329797', item: '402' },
-  { name: 'ボールペン・文具',            seg: '文具',        kw: ['ボールペン','ペン','筆記具','ノート','手帳','ファイル','シャーペン','マーカー'],                gpc: '10002745', jicfs: '310405', item: '401' },
+  { name: 'ボールペン・文具',            seg: '文具',        kw: ['ボールペン','ペン','筆記具','ノート','手帳','ファイル','シャーペン','マーカー','スケッチブック','スケッチ','クロッキー','お絵描き帳','自由帳','メモ帳','画用紙','画帳','デッサン'],  gpc: '10003145', jicfs: '431607', item: '301' },
+  { name: 'プランター・ガーデニング',    seg: 'ガーデン',    kw: ['プランター','植木鉢','ガーデニング','園芸','鉢','花壇','観葉植物','ガーデン','鉢植え','フラワー'],  gpc: '10003185', jicfs: '250197', item: '304' },
+  { name: 'ヘアバンド・ヘアアクセサリー', seg: 'アパレル',   kw: ['ヘアバンド','ヘアアクセ','ヘアゴム','ヘアピン','カチューシャ','ヘアクリップ','ターバン','シュシュ'],  gpc: '10005558', jicfs: '519797', item: '501' },
 ];
 
 const HEADERS = [
@@ -204,8 +230,8 @@ const HEADERS = [
 let gs1List = JSON.parse(localStorage.getItem('gs1_codes') || '[]');
 let brandList = JSON.parse(localStorage.getItem('brand_names') || '[]');
 let selectedGs1 = localStorage.getItem('selected_gs1') || null;
-let groups = [];
-let groupCounter = 0;
+let groups = (function(){ try { return JSON.parse(localStorage.getItem('jan_groups') || '[]'); } catch(e) { return []; } })();
+let groupCounter = groups.reduce(function(m,g){ return Math.max(m, parseInt((g.id||'').replace('g',''))||0); }, 0);
 let kuromojiTokenizer = null;
 
 // ================================================================
@@ -233,9 +259,9 @@ function hiraganaToKatakana(str) {
 }
 
 function sanitizeKana(s) {
-  // kuromoji が全角数字等に返す制御文字（\x00-\x1f, \x7f-\x9f）を除去
   if (!s) return '';
-  return s.replace(/[\x00-\x1f\x7f-\x9f]/g, '');
+  // GJDB許容文字のみ残す：全角カタカナ・全角英数記号・全角スペース・中黒・長音
+  return s.replace(/[^　゠-ヿ！-｠・ー]/g, '');
 }
 
 function nameToKana(str) {
@@ -307,9 +333,17 @@ function log(msg) {
 
 function showAlert(msg, type) {
   if (!type) type = 'warn';
-  const z = document.getElementById('alert-zone');
-  z.innerHTML = '<div class="alert alert-' + type + '">' + msg + '</div>';
-  setTimeout(function(){ z.innerHTML=''; }, 6000);
+  var zone = document.getElementById('toast-zone');
+  var t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = msg;
+  zone.appendChild(t);
+  requestAnimationFrame(function(){ t.classList.add('show'); });
+  var dur = (type === 'error') ? 8000 : 5000;
+  setTimeout(function(){
+    t.classList.remove('show');
+    setTimeout(function(){ if (t.parentNode) t.parentNode.removeChild(t); }, 250);
+  }, dur);
 }
 
 function toggleCard(header) {
@@ -329,9 +363,10 @@ function toggleCard(header) {
 // ================================================================
 function saveGs1() { localStorage.setItem('gs1_codes', JSON.stringify(gs1List)); }
 function saveBrand() { localStorage.setItem('brand_names', JSON.stringify(brandList)); }
+function saveGroups() { localStorage.setItem('jan_groups', JSON.stringify(groups)); }
 
 function addGs1() {
-  const v = document.getElementById('new-gs1').value.trim().replace(/\\D/g,'');
+  const v = document.getElementById('new-gs1').value.trim().replace(/\D/g,'');
   if (!v) return showAlert('GS1事業者コードを入力してください');
   if (v.length < 7 || v.length > 9) return showAlert('GS1事業者コードは7〜9桁です');
   if (gs1List.includes(v)) return showAlert('すでに登録済みです');
@@ -454,6 +489,57 @@ function syncCounterFromGs1List(input) {
   reader.readAsArrayBuffer(input.files[0]);
 }
 
+function fixCounterFromErrorFile(input) {
+  if (!input.files || !input.files[0]) return;
+  if (gs1List.length === 0) {
+    showAlert('先にGS1事業者コードを登録してください', 'error');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'array' });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      const maxCounters = {};
+      for (let i = 0; i < rows.length; i++) {
+        for (let j = 0; j < rows[i].length; j++) {
+          const val = String(rows[i][j] || '').trim();
+          if (val.length !== 13 || !/^\d{13}$/.test(val)) continue;
+          for (let k = 0; k < gs1List.length; k++) {
+            const prefix = gs1List[k];
+            if (val.startsWith(prefix)) {
+              const padLen = 12 - prefix.length;
+              const num = parseInt(val.substring(prefix.length, prefix.length + padLen));
+              if (!isNaN(num) && (!(prefix in maxCounters) || num > maxCounters[prefix])) {
+                maxCounters[prefix] = num;
+              }
+            }
+          }
+        }
+      }
+      if (Object.keys(maxCounters).length === 0) {
+        showAlert('エラーファイルに対応するGTINが見つかりませんでした', 'error');
+        input.value = ''; return;
+      }
+      const msgs = [];
+      for (const prefix in maxCounters) {
+        const next = maxCounters[prefix] + 1;
+        localStorage.setItem('jan_counter_' + prefix, next);
+        msgs.push(prefix + ' → 次のカウンター: ' + next + '（登録済み最大: ' + maxCounters[prefix] + '）');
+      }
+      updateJanDisplay();
+      showAlert('カウンターを自動修正しました:<br>' + msgs.join('<br>'), 'success');
+      log('エラーファイルからカウンター修正: ' + msgs.join(', '));
+    } catch(ex) {
+      showAlert('ファイル読み込みエラー: ' + ex.message, 'error');
+    }
+    input.value = '';
+  };
+  reader.readAsArrayBuffer(input.files[0]);
+}
+
 function importJanFromXlsx() {
   document.getElementById('import-xlsx-file').click();
 }
@@ -548,6 +634,7 @@ function addGroup() {
     }
   };
   groups.push(group);
+  saveGroups();
   renderGroup(group);
   setTimeout(function() {
     const el = document.getElementById('group-' + id);
@@ -589,10 +676,13 @@ function buildGroupHtml(group) {
       + '<div class="cat-codes">取扱品目: ' + group.fields.category.item + ' / GPC: ' + group.fields.category.gpc + ' / JICFS: ' + group.fields.category.jicfs + '</div></div>'
     : '<div class="category-detect" style="color:#999">（商品名を入力するとカテゴリを自動検出します）</div>';
 
-  return '<div class="group-header" onclick="toggleGroup(\''+ gid +'\')">' 
+  const excl = group.gjdbExclude;
+  return '<div class="group-header" onclick="toggleGroup(\''+ gid +'\')" style="' + (excl ? 'opacity:0.55;' : '') + '">'
     + '<div class="group-title"><span>グループ ' + gid + '</span><span id="group-title-'+ gid +'" style="opacity:0.8;font-size:13px">' + (group.name||'（商品名未入力）') + '</span>'
-    + '<span class="variant-badge" id="variant-count-'+ gid +'">' + group.variants.length + 'バリエーション</span></div>'
+    + '<span class="variant-badge" id="variant-count-'+ gid +'">' + group.variants.length + 'バリエーション</span>'
+    + (excl ? '<span style="background:#888;color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;margin-left:6px">GJDB除外中</span>' : '') + '</div>'
     + '<div style="display:flex;gap:8px;align-items:center">'
+    + '<button id="gjdb-excl-btn-'+ gid +'" class="btn btn-sm" style="' + (excl ? 'background:#888;color:#fff' : 'background:#27ae60;color:#fff') + '" onclick="event.stopPropagation();toggleGjdbExclude(\''+ gid +'\')">' + (excl ? '✓ GJDB含める' : '⊘ GJDB除外') + '</button>'
     + '<button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removeGroup(\''+ gid +'\')">&times; 削除</button>'
     + '<span style="display:inline-block;transition:transform 0.2s">&#9660;</span></div></div>'
     + '<div class="group-body" id="group-body-'+ gid +'">' 
@@ -604,7 +694,11 @@ function buildGroupHtml(group) {
     + '<input type="text" id="name-'+ gid +'" placeholder="例：工具差し 3連 腰道具" value="'+(group.name||'')+'" oninput="onNameChange(\''+ gid +'\',this.value)"></div>'
     + '<div class="form-group"><label>商品名（カナ）<span class="req">*</span></label>'
     + '<input type="text" id="kana-'+ gid +'" placeholder="例：コウグサシ サンレン" value="'+(group.fields.nameKana||'')+'" oninput="updateField(\''+ gid +'\',\'nameKana\',this.value)" onchange="document.getElementById(\'kana-'+ gid +'\').dataset.edited=\'1\'"></div>'
-    + '<div>' + catHtml + '</div></div>'
+    + '<div>' + catHtml
+    + '<select style="margin-top:6px;width:100%;font-size:12px;border:1px solid #ccd8e4;border-radius:4px;padding:4px 6px" onchange="applyCategorySelect(\''+ gid +'\',this.value)">'
+    + '<option value="">▼ カテゴリを手動で選択（自動検出できない場合）</option>'
+    + CATEGORY_DB.map(function(c){ return '<option value="'+c.name+'"'+(group.fields.category&&group.fields.category.name===c.name?' selected':'')+'>'+c.seg+' / '+c.name+'</option>'; }).join('')
+    + '</select></div></div>'
     + '<div class="grid-3" style="margin-bottom:12px">'
     + '<div class="form-group"><label>取扱品目コード<span class="req">*</span></label><input type="number" id="item-'+ gid +'" placeholder="例：304" value="'+(group.fields.itemCode||'')+'" oninput="updateField(\''+ gid +'\',\'itemCode\',this.value)"></div>'
     + '<div class="form-group"><label>GPCコード（8桁）<span class="req">*</span></label><input type="text" id="gpc-'+ gid +'" placeholder="例：10003185" maxlength="8" value="'+(group.fields.gpc||'')+'" oninput="updateField(\''+ gid +'\',\'gpc\',this.value)"></div>'
@@ -630,7 +724,7 @@ function buildVariantRow(gid, v) {
     + '<td><input type="text" class="jan-col" id="vjan-'+ v.id +'" placeholder="自動生成" value="'+(v.jan||'')+'" maxlength="13" oninput="onVariantChange(\''+ gid +'\',\''+ v.id +'\',\'jan\',this.value)"></td>'
     + '<td><input type="text" class="not-mono" id="vdetail-'+ v.id +'" value="'+ detail.replace(/"/g,'&quot;') +'" style="color:#666;font-size:12px" oninput="onVariantChange(\''+ gid +'\',\''+ v.id +'\',\'detail\',this.value)"></td>'
     + '<td><input type="text" class="not-mono" id="vsku-'+ v.id +'" placeholder="例：PB-001-BLK-M" value="'+(v.sku||'')+'" oninput="onVariantChange(\''+ gid +'\',\''+ v.id +'\',\'sku\',this.value)"></td>'
-    + '<td style="text-align:center"><button class="btn btn-danger btn-sm" onclick="removeVariant(\''+ gid +'\',\''+ v.id +'\')">&#215;</button></td>';
+    + '<td style="text-align:center;white-space:nowrap"><button class="btn btn-sm" style="background:#e67e22;color:#fff;margin-right:2px" title="JANを再生成（登録済エラーの場合）" onclick="regenJan(\''+ gid +'\',\''+ v.id +'\')">🔄</button><button class="btn btn-danger btn-sm" onclick="removeVariant(\''+ gid +'\',\''+ v.id +'\')">&#215;</button></td>';
 }
 
 function buildDetail(gid, v) {
@@ -656,6 +750,7 @@ function addVariant(gid) {
   const jan = generateJan(selectedGs1);
   const v = { id: vid, num: g.variantCounter, color:'', size:'', jan: jan||'', sku:'', detail:'', detailEdited: false };
   g.variants.push(v);
+  saveGroups();
   const tbody = document.getElementById('variants-' + gid);
   const tr = document.createElement('tr');
   tr.id = 'vrow-' + vid;
@@ -668,16 +763,66 @@ function removeVariant(gid, vid) {
   const g = groups.find(function(x){ return x.id === gid; });
   if (!g) return;
   g.variants = g.variants.filter(function(v){ return v.id !== vid; });
+  saveGroups();
   const tr = document.getElementById('vrow-' + vid);
   if (tr) tr.remove();
   updateVariantCount(gid);
 }
 
+function regenJan(gid, vid) {
+  if (!selectedGs1) { showAlert('GS1事業者コードを選択してください', 'error'); return; }
+  const g = groups.find(function(x){ return x.id === gid; });
+  if (!g) return;
+  const v = g.variants.find(function(x){ return x.id === vid; });
+  if (!v) return;
+  const newJan = generateJan(selectedGs1);
+  if (!newJan) { showAlert('JAN生成に失敗しました', 'error'); return; }
+  v.jan = newJan;
+  saveGroups();
+  const inp = document.getElementById('vjan-' + vid);
+  if (inp) inp.value = newJan;
+  showAlert('JAN再生成: ' + newJan, 'success');
+}
+
 function removeGroup(gid) {
   if (!confirm('このグループを削除しますか？')) return;
   groups = groups.filter(function(g){ return g.id !== gid; });
+  saveGroups();
   const el = document.getElementById('group-' + gid);
   if (el) el.remove();
+}
+
+function toggleGjdbExclude(gid) {
+  const g = groups.find(function(x){ return x.id === gid; });
+  if (!g) return;
+  g.gjdbExclude = !g.gjdbExclude;
+  saveGroups();
+  // ヘッダーだけ差し替え（group-card全体を再描画せずbodyを保持）
+  const card = document.getElementById('group-' + gid);
+  if (!card) return;
+  const excl = g.gjdbExclude;
+  const header = card.querySelector('.group-header');
+  if (header) {
+    header.style.opacity = excl ? '0.55' : '';
+    // バッジ更新
+    const badge = header.querySelector('.gjdb-excl-badge');
+    if (excl && !badge) {
+      const titleDiv = header.querySelector('.group-title');
+      const sp = document.createElement('span');
+      sp.className = 'gjdb-excl-badge';
+      sp.style.cssText = 'background:#888;color:#fff;font-size:10px;padding:2px 7px;border-radius:10px;margin-left:6px';
+      sp.textContent = 'GJDB除外中';
+      titleDiv.appendChild(sp);
+    } else if (!excl && badge) {
+      badge.remove();
+    }
+    // ボタン更新
+    const btn = document.getElementById('gjdb-excl-btn-' + gid);
+    if (btn) {
+      btn.style.background = excl ? '#888' : '#27ae60';
+      btn.textContent = excl ? '✓ GJDB含める' : '⊘ GJDB除外';
+    }
+  }
 }
 
 function toggleGroup(gid) {
@@ -699,9 +844,37 @@ function updateVariantCount(gid) {
   if (el && g) el.textContent = g.variants.length + 'バリエーション';
 }
 
+function applyCategorySelect(gid, catName) {
+  if (!catName) return;
+  const cat = CATEGORY_DB.find(function(c){ return c.name === catName; });
+  if (!cat) return;
+  const g = groups.find(function(x){ return x.id === gid; });
+  if (!g) return;
+  g.fields.category = cat;
+  g.fields.itemCode = cat.item;
+  g.fields.gpc = cat.gpc;
+  g.fields.jicfs = cat.jicfs;
+  saveGroups();
+  const itemEl = document.getElementById('item-' + gid);
+  const gpcEl = document.getElementById('gpc-' + gid);
+  const jicfsEl = document.getElementById('jicfs-' + gid);
+  if (itemEl) itemEl.value = cat.item;
+  if (gpcEl) gpcEl.value = cat.gpc;
+  if (jicfsEl) jicfsEl.value = cat.jicfs;
+  const body = document.getElementById('group-body-' + gid);
+  if (body) {
+    const catArea = body.querySelector('.category-detect');
+    if (catArea) {
+      catArea.innerHTML = '<div class="cat-name">' + cat.name + ' <span class="gs1-badge" style="font-size:10px;padding:2px 6px">' + cat.seg + '</span></div>'
+        + '<div class="cat-codes">取扱品目: ' + cat.item + ' / GPC: ' + cat.gpc + ' / JICFS: ' + cat.jicfs + '</div>';
+      catArea.style.color = '';
+    }
+  }
+}
+
 function updateField(gid, field, value) {
   const g = groups.find(function(x){ return x.id === gid; });
-  if (g) g.fields[field] = value;
+  if (g) { g.fields[field] = value; saveGroups(); }
 }
 
 function onBrandChange(gid, sel) {
@@ -716,6 +889,7 @@ function onBrandChange(gid, sel) {
     g.fields.brand = sel.value;
     g.fields.brandCustom = '';
   }
+  saveGroups();
   updateAllDetails(gid);
 }
 
@@ -741,9 +915,10 @@ function onNameChange(gid, value) {
       const itemEl = document.getElementById('item-' + gid);
       const gpcEl = document.getElementById('gpc-' + gid);
       const jicfsEl = document.getElementById('jicfs-' + gid);
-      if (itemEl && !itemEl.value) { itemEl.value = cat.item; g.fields.itemCode = cat.item; }
-      if (gpcEl && !gpcEl.value) { gpcEl.value = cat.gpc; g.fields.gpc = cat.gpc; }
-      if (jicfsEl && !jicfsEl.value) { jicfsEl.value = cat.jicfs; g.fields.jicfs = cat.jicfs; }
+      if (itemEl) { itemEl.value = cat.item; g.fields.itemCode = cat.item; }
+      if (gpcEl) { gpcEl.value = cat.gpc; g.fields.gpc = cat.gpc; }
+      if (jicfsEl) { jicfsEl.value = cat.jicfs; g.fields.jicfs = cat.jicfs; }
+      saveGroups();
     }
     const body = document.getElementById('group-body-' + gid);
     if (body) {
@@ -776,6 +951,7 @@ function onVariantChange(gid, vid, field, value) {
     const detailEl = document.getElementById('vdetail-' + vid);
     if (detailEl) detailEl.value = d;
   }
+  saveGroups();
 }
 
 function updateAllDetails(gid) {
@@ -806,14 +982,13 @@ function setCell(ws, rowIdx, colIdx, value, type) {
 }
 
 function downloadXlsx() {
+  const activeGroups = groups.filter(function(g){ return !g.gjdbExclude; });
+  if (activeGroups.length === 0) { showAlert('GJDB対象グループが0件です。除外を解除してください。', 'error'); return; }
   const errors = [];
-  for (let gi = 0; gi < groups.length; gi++) {
-    const g = groups[gi];
+  for (let gi = 0; gi < activeGroups.length; gi++) {
+    const g = activeGroups[gi];
     if (!g.name.trim()) errors.push('グループ' + g.id + ': 商品名が空です');
     if (!g.fields.brand && !g.fields.brandCustom) errors.push('グループ' + g.id + ': ブランド名が空です');
-    if (!g.fields.itemCode) errors.push('グループ' + g.id + ': 取扱品目コードが空です');
-    if (!g.fields.gpc) errors.push('グループ' + g.id + ': GPCコードが空です');
-    if (!g.fields.qty) errors.push('グループ' + g.id + ': 内容量が空です');
     // バリエーション0件の場合はSKU1として自動追加
     if (g.variants.length === 0) {
       if (!selectedGs1) {
@@ -845,10 +1020,9 @@ function downloadXlsx() {
     return;
   }
   if (!selectedGs1) { showAlert('GS1事業者コードを選択してください', 'error'); return; }
-  if (groups.length === 0) { showAlert('商品グループが0件です', 'error'); return; }
 
   // Pythonサーバー(port 8082)にPOSTしてopenpyxlで生成されたファイルをダウンロード
-  const payload = JSON.stringify({ groups: groups, selectedGs1: selectedGs1 });
+  const payload = JSON.stringify({ groups: activeGroups, selectedGs1: selectedGs1 });
   showAlert('Excel生成中...', 'info');
 
   fetch('http://localhost:8082/generate', {
@@ -866,8 +1040,10 @@ function downloadXlsx() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = 'gjdb_product_upload_' + ds + '.xlsx';
+    a.style.display = 'none';
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(url);
+    setTimeout(function(){ URL.revokeObjectURL(url); document.body.removeChild(a); }, 200);
     const count = groups.reduce(function(s,g){ return s + g.variants.length; }, 0);
     showAlert('ダウンロード完了（' + count + '件）', 'success');
     log('XLSX生成完了: ' + count + '件');
@@ -880,10 +1056,196 @@ function downloadXlsx() {
 }
 
 // ================================================================
+// AMAZON SECTION（上段とは完全独立）
+// ================================================================
+var amazonGroups = (function(){ try { return JSON.parse(localStorage.getItem('amz_groups') || '[]'); } catch(e) { return []; } })();
+var amazonGroupCounter = amazonGroups.reduce(function(m,g){ return Math.max(m, parseInt((g.id||'').replace('ag',''))||0); }, 0);
+
+function saveAmazonGroups() {
+  localStorage.setItem('amz_groups', JSON.stringify(amazonGroups));
+}
+
+function addAmazonGroup() {
+  amazonGroupCounter++;
+  var ag = {
+    id: 'ag' + amazonGroupCounter,
+    name: '', brand: '',
+    desc: '', keywords: '', fulfillment: 'DEFAULT',
+    img0:'', img1:'', img2:'', img3:'', img4:'',
+    variants: [], variantCounter: 0
+  };
+  amazonGroups.push(ag);
+  saveAmazonGroups();
+  renderAmazonSection();
+  setTimeout(function() {
+    var el = document.getElementById('amzg-' + ag.id);
+    if (el) el.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }, 100);
+}
+
+function removeAmazonGroup(gid) {
+  if (!confirm('このグループを削除しますか？')) return;
+  amazonGroups = amazonGroups.filter(function(g){ return g.id !== gid; });
+  saveAmazonGroups();
+  renderAmazonSection();
+}
+
+function addAmazonVariant(gid) {
+  var g = amazonGroups.find(function(x){ return x.id === gid; });
+  if (!g) return;
+  g.variantCounter++;
+  g.variants.push({ id: gid+'v'+g.variantCounter, num: g.variantCounter, color:'', size:'', jan:'', sku:'', price:'', stock:'' });
+  saveAmazonGroups();
+  renderAmazonSection();
+}
+
+function removeAmazonVariant(gid, vid) {
+  var g = amazonGroups.find(function(x){ return x.id === gid; });
+  if (!g) return;
+  g.variants = g.variants.filter(function(v){ return v.id !== vid; });
+  saveAmazonGroups();
+  renderAmazonSection();
+}
+
+function updateAmzGroup(gid, field, value) {
+  var g = amazonGroups.find(function(x){ return x.id === gid; });
+  if (g) { g[field] = value; saveAmazonGroups(); }
+}
+
+function updateAmzVariant(gid, vid, field, value) {
+  var g = amazonGroups.find(function(x){ return x.id === gid; });
+  if (!g) return;
+  var v = g.variants.find(function(x){ return x.id === vid; });
+  if (v) { v[field] = value; saveAmazonGroups(); }
+}
+
+function buildAmazonGroupHtml(g) {
+  var gid = g.id;
+  var variantRows = g.variants.map(function(v) {
+    var label = [v.color, v.size].filter(Boolean).join(' / ') || 'バリエーション' + v.num;
+    return '<tr>'
+      + '<td style="color:#666;font-size:12px;white-space:nowrap">' + label + '</td>'
+      + '<td><input type="text" class="jan-col" value="' + (v.jan||'') + '" placeholder="4901234567890" maxlength="13" style="max-width:130px;font-size:12px" oninput="updateAmzVariant(\'' + gid + '\',\'' + v.id + '\',\'jan\',this.value)"></td>'
+      + '<td><input type="text" value="' + (v.color||'') + '" placeholder="例：ブラック" style="max-width:90px" oninput="updateAmzVariant(\'' + gid + '\',\'' + v.id + '\',\'color\',this.value)"></td>'
+      + '<td><input type="text" value="' + (v.size||'') + '" placeholder="例：Lサイズ" style="max-width:90px" oninput="updateAmzVariant(\'' + gid + '\',\'' + v.id + '\',\'size\',this.value)"></td>'
+      + '<td><input type="text" value="' + (v.sku||'') + '" placeholder="例：PB-001-BLK" style="max-width:120px" oninput="updateAmzVariant(\'' + gid + '\',\'' + v.id + '\',\'sku\',this.value)"></td>'
+      + '<td><input type="number" value="' + (v.price||'') + '" placeholder="1980" min="0" style="max-width:80px" oninput="updateAmzVariant(\'' + gid + '\',\'' + v.id + '\',\'price\',this.value)"></td>'
+      + '<td><input type="number" value="' + (v.stock||'') + '" placeholder="100" min="0" style="max-width:70px" oninput="updateAmzVariant(\'' + gid + '\',\'' + v.id + '\',\'stock\',this.value)"></td>'
+      + '<td style="text-align:center"><button class="btn btn-danger btn-sm" onclick="removeAmazonVariant(\'' + gid + '\',\'' + v.id + '\')">&#215;</button></td>'
+      + '</tr>';
+  }).join('');
+
+  return '<div id="amzg-' + gid + '" style="background:#fff;border:1px solid #ffd580;border-radius:8px;margin-bottom:14px;overflow:hidden">'
+    + '<div style="background:linear-gradient(135deg,#ff9900,#e68a00);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between">'
+    + '<b style="font-size:14px">' + (g.name || '（商品名未入力）') + '</b>'
+    + '<button class="btn btn-danger btn-sm" onclick="removeAmazonGroup(\'' + gid + '\')">&times; 削除</button></div>'
+    + '<div style="padding:16px">'
+    + '<div class="grid-2" style="margin-bottom:12px">'
+    + '<div class="form-group"><label>商品名<span class="req">*</span></label><input type="text" value="' + (g.name||'') + '" placeholder="例：プランター 丸型 大型" oninput="updateAmzGroup(\'' + gid + '\',\'name\',this.value);this.closest(\'#amzg-' + gid + '\').querySelector(\'b\').textContent=this.value||\'（商品名未入力）\'"></div>'
+    + '<div class="form-group"><label>ブランド名<span class="req">*</span></label><input type="text" value="' + (g.brand||'') + '" placeholder="例：PathBright" oninput="updateAmzGroup(\'' + gid + '\',\'brand\',this.value)"></div>'
+    + '</div>'
+    + '<div class="grid-2" style="margin-bottom:12px">'
+    + '<div class="form-group"><label>商品説明</label><textarea rows="3" style="width:100%;font-size:13px;border:1px solid #ccd8e4;border-radius:4px;padding:7px 10px;font-family:inherit;resize:vertical" oninput="updateAmzGroup(\'' + gid + '\',\'desc\',this.value)">' + (g.desc||'') + '</textarea></div>'
+    + '<div class="form-group"><label>検索キーワード</label><input type="text" value="' + (g.keywords||'') + '" placeholder="例：プランター 植木鉢 大型 屋外" oninput="updateAmzGroup(\'' + gid + '\',\'keywords\',this.value)" style="margin-bottom:8px"><label style="margin-top:8px">フルフィルメント</label><select onchange="updateAmzGroup(\'' + gid + '\',\'fulfillment\',this.value)" style="margin-top:4px"><option value="DEFAULT" ' + (g.fulfillment!=='AMAZON_NA'?'selected':'') + '>自己発送 (FBM)</option><option value="AMAZON_NA" ' + (g.fulfillment==='AMAZON_NA'?'selected':'') + '>FBA</option></select></div>'
+    + '</div>'
+    + '<div class="form-group" style="margin-bottom:12px"><label>商品画像URL</label>'
+    + '<div style="display:grid;grid-template-columns:48px 1fr 48px 1fr;gap:4px 8px;align-items:center;margin-top:4px">'
+    + '<span style="font-size:11px;color:#666;text-align:right">メイン</span><input type="text" value="' + (g.img0||'') + '" placeholder="https://..." oninput="updateAmzGroup(\'' + gid + '\',\'img0\',this.value)">'
+    + '<span style="font-size:11px;color:#666;text-align:right">サブ1</span><input type="text" value="' + (g.img1||'') + '" placeholder="https://..." oninput="updateAmzGroup(\'' + gid + '\',\'img1\',this.value)">'
+    + '<span style="font-size:11px;color:#666;text-align:right">サブ2</span><input type="text" value="' + (g.img2||'') + '" placeholder="https://..." oninput="updateAmzGroup(\'' + gid + '\',\'img2\',this.value)">'
+    + '<span style="font-size:11px;color:#666;text-align:right">サブ3</span><input type="text" value="' + (g.img3||'') + '" placeholder="https://..." oninput="updateAmzGroup(\'' + gid + '\',\'img3\',this.value)">'
+    + '<span style="font-size:11px;color:#666;text-align:right">サブ4</span><input type="text" value="' + (g.img4||'') + '" placeholder="https://..." oninput="updateAmzGroup(\'' + gid + '\',\'img4\',this.value)">'
+    + '</div></div>'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><b style="font-size:12px;color:#1a3c5e">バリエーション（JANコード・価格・在庫）</b><button class="btn btn-primary btn-sm" onclick="addAmazonVariant(\'' + gid + '\')">+ バリエーション追加</button></div>'
+    + '<div style="overflow-x:auto"><table class="variant-table"><thead><tr><th>カラー/サイズ</th><th>JAN（13桁）</th><th>カラー</th><th>サイズ</th><th>SKU</th><th>販売価格(円)</th><th>在庫数</th><th style="width:40px">削除</th></tr></thead><tbody>' + variantRows + '</tbody></table></div>'
+    + '<div style="margin-top:6px;text-align:right"><button class="btn btn-primary btn-sm" onclick="addAmazonVariant(\'' + gid + '\')">+ バリエーション追加</button></div>'
+    + '</div></div>';
+}
+
+function renderAmazonSection() {
+  var container = document.getElementById('amazon-groups');
+  if (!container) return;
+  if (amazonGroups.length === 0) {
+    container.innerHTML = '<div style="background:#fff;border:1px solid #e0e8f0;border-radius:8px;padding:24px;text-align:center;color:#999;font-size:13px">「+ 商品グループを追加」ボタンで追加してください。入力内容は自動保存されます。</div>';
+    return;
+  }
+  container.innerHTML = amazonGroups.map(buildAmazonGroupHtml).join('');
+}
+
+function downloadAmazonXlsx(productType) {
+  if (amazonGroups.length === 0) { showAlert('Amazonグループが0件です', 'error'); return; }
+  var payload = JSON.stringify({ groups: amazonGroups.map(function(g) {
+    return {
+      id: g.id, name: g.name,
+      fields: { brand: g.brand, brandCustom: g.brand, origin: '156',
+        amzDesc: g.desc, amzKeywords: g.keywords, amzFulfillment: g.fulfillment,
+        amzImg0: g.img0, amzImg1: g.img1, amzImg2: g.img2, amzImg3: g.img3, amzImg4: g.img4 },
+      variants: g.variants
+    };
+  }), selectedGs1: '' });
+  showAlert('Amazonテンプレート生成中...', 'info');
+
+  fetch('http://localhost:8082/amazon/' + productType, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: payload
+  })
+  .then(function(res) {
+    if (!res.ok) return res.text().then(function(t){ throw new Error(t); });
+    return res.blob();
+  })
+  .then(function(blob) {
+    const today = new Date();
+    const ds = today.getFullYear() + ('0'+(today.getMonth()+1)).slice(-2) + ('0'+today.getDate()).slice(-2);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'amazon_' + productType + '_' + ds + '.xlsm';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(url); document.body.removeChild(a); }, 200);
+    const count = groups.reduce(function(s,g){ return s + g.variants.length; }, 0);
+    showAlert('Amazonテンプレート生成完了（' + count + '件）', 'success');
+  })
+  .catch(function(ex) {
+    showAlert('サーバーエラー: ' + ex.message + '<br>ターミナルで <code>python3 ~/pathbright-HP/jan_xlsx_server.py</code> を実行してください', 'error');
+    console.error(ex);
+  });
+}
+
+// ================================================================
 // INIT
 // ================================================================
 renderGs1List();
 renderBrandList();
+// 保存済みグループのカナ・GPCを最新仕様で修正してから描画
+groups.forEach(function(g) {
+  // カナの不正文字を除去
+  if (g.fields.nameKana) {
+    g.fields.nameKana = sanitizeKana(g.fields.nameKana);
+  }
+  // カテゴリが保存されている場合、CATEGORY_DBの最新コードで上書き
+  if (g.fields.category && g.fields.category.name) {
+    var cat = CATEGORY_DB.find(function(c){ return c.name === g.fields.category.name; });
+    if (cat) {
+      g.fields.category = cat;
+      g.fields.itemCode = cat.item;
+      g.fields.gpc = cat.gpc;
+      g.fields.jicfs = cat.jicfs;
+    }
+  }
+  renderGroup(g);
+  g.variants.forEach(function(v) {
+    var tbody = document.getElementById('variants-' + g.id);
+    if (!tbody) return;
+    var tr = document.createElement('tr');
+    tr.id = 'vrow-' + v.id;
+    tr.innerHTML = buildVariantRow(g.id, v);
+    tbody.appendChild(tr);
+  });
+  updateVariantCount(g.id);
+});
+saveGroups();
 // Validate stored selectedGs1
 if (selectedGs1 && !gs1List.includes(selectedGs1)) {
   selectedGs1 = gs1List[0] || null;
@@ -897,7 +1259,8 @@ document.addEventListener('input', function(e) {
   }
 });
 
-log('JAN一括登録ツール 起動完了');
+renderAmazonSection();
+log('JAN一括登録ツール / Amazon出品ツール 起動完了');
 
 // IME対応 Enter キーハンドラ
 // Chrome/macOS では compositionend が keydown より先に発火するため justFinished フラグが必要

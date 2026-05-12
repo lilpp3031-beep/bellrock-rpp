@@ -5,8 +5,22 @@ HTMLツールからPOSTされたJSONを受け取り、テンプレートXMLを�
 openpyxlを一切使わず、テンプレートのXML構造・メタデータを完全保持。
 """
 import json, io, os, re, html, zipfile
+import xml.etree.ElementTree as ET
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
+
+AMAZON_TEMPLATES = {
+    'PLANTER': os.path.expanduser('~/Downloads/PLANTER.xlsm'),
+    'PET_SUPPLIES': os.path.expanduser('~/Downloads/PET_SUPPLIES.xlsm'),
+    'SPORTING_GOODS': os.path.expanduser('~/Downloads/SPORTING_GOODS_COMPUTER_COMPONENT.xlsm'),
+}
+
+ORIGIN_MAP = {
+    '156': '中国', '392': '日本', '840': 'アメリカ合衆国',
+    '410': '韓国', '704': 'ベトナム', '764': 'タイ',
+    '360': 'インドネシア', '356': 'インド', '458': 'マレーシア',
+    '276': 'ドイツ', '380': 'イタリア', '250': 'フランス',
+}
 
 TEMPLATE_PATH = os.path.join(os.path.dirname(__file__),
     '.playwright-mcp', 'gjdb-product-upload-20260502.xlsx')
@@ -159,19 +173,27 @@ def generate_xlsx(payload):
             color = to_full_width(v.get('color', ''))
             size  = to_full_width(v.get('size', ''))
             spec  = '　'.join(filter(None, [color, size]))
-            final_name = product_name + ('　' + spec if spec else '')
+            # 表示用規格が空のとき内容量+単位を代わりに使用（GJDB検証通過のため）
+            if not spec:
+                qty_raw = fields.get('qty', '')
+                qty_unit = to_full_width(fields.get('qtyUnit', '個'))
+                try:
+                    qty_int = int(float(qty_raw)) if qty_raw else 0
+                    if qty_int > 0:
+                        spec = to_full_width(str(qty_int)) + qty_unit
+                except Exception:
+                    pass
+            final_name = (product_name + ('　' + spec if spec else ''))[:100]
             brand_fw = to_full_width(brand)
 
             if v.get('detailEdited'):
                 detail = to_full_width(v.get('detail', ''))
-                # 詳細に大文字のブランド名が含まれない場合、小文字版を試みる
-                # （ユーザーが小文字で入力した場合の対応）
                 if brand_fw and brand_fw not in detail:
                     brand_lower_fw = to_full_width(brand.lower())
                     if brand_lower_fw in detail:
                         brand_fw = brand_lower_fw
             else:
-                detail = to_full_width('　'.join(filter(None, [brand, product_name, color, size])))
+                detail = to_full_width('　'.join(filter(None, [brand, product_name, color, size, spec])))
 
             jan = v.get('jan', '')
             sku = v.get('sku', '')
@@ -251,6 +273,254 @@ def generate_xlsx(payload):
     return result.getvalue(), row_num - 4
 
 
+# ================================================================
+# Amazon フラットファイル生成
+# ================================================================
+NS = {'x': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+
+def _amz_find_template_sheet(tmpl_files):
+    """workbook.xmlから'テンプレート'シートのパスを返す"""
+    wb = ET.fromstring(tmpl_files['xl/workbook.xml'])
+    rels = ET.fromstring(tmpl_files['xl/_rels/workbook.xml.rels'])
+    rid_to_target = {r.get('Id'): r.get('Target') for r in rels}
+    for s in wb.findall('.//x:sheet', NS):
+        if s.get('name') == 'テンプレート':
+            rid = s.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
+            target = rid_to_target.get(rid, '')
+            if not target.startswith('worksheets/'):
+                target = 'worksheets/' + target.lstrip('/')
+            return 'xl/' + target
+    return 'xl/worksheets/sheet5.xml'
+
+def _amz_build_col_map(tmpl_files, sheet_path, strings):
+    """row5の属性名 → 列文字 マップを構築"""
+    sheet = ET.fromstring(tmpl_files[sheet_path])
+    col_map = {}
+    for row in sheet.findall('.//x:row', NS):
+        if int(row.get('r')) != 5:
+            continue
+        for c in row.findall('x:c', NS):
+            col = c.get('r').rstrip('0123456789')
+            v = c.find('x:v', NS)
+            t = c.get('t')
+            if v is not None:
+                val = strings[int(v.text)] if t == 's' else (v.text or '')
+                if val:
+                    col_map[val] = col
+        break
+    return col_map
+
+def _amz_col_sort_key(col):
+    n = 0
+    for ch in col:
+        n = n * 26 + (ord(ch) - 64)
+    return n
+
+def generate_amazon_xlsx(payload, product_type):
+    template_path = AMAZON_TEMPLATES.get(product_type)
+    if not template_path or not os.path.exists(template_path):
+        raise FileNotFoundError(f'テンプレートが見つかりません: {template_path}')
+
+    groups = payload.get('groups', [])
+
+    with zipfile.ZipFile(template_path, 'r') as z:
+        tmpl_files = {name: z.read(name) for name in z.namelist()}
+
+    # sharedStrings 読み込み
+    ss_xml = tmpl_files['xl/sharedStrings.xml'].decode('utf-8')
+    ss_tree = ET.fromstring(ss_xml)
+    strings = [t.text or '' for t in ss_tree.findall('.//x:t', NS)]
+    ss_total = len(strings)
+    new_si_entries = []
+
+    def get_or_add(text):
+        if not text:
+            return None
+        if text in strings:
+            return strings.index(text)
+        if text in new_si_entries:
+            return ss_total + new_si_entries.index(text)
+        new_si_entries.append(text)
+        return ss_total + len(new_si_entries) - 1
+
+    sheet_path = _amz_find_template_sheet(tmpl_files)
+    col_map = _amz_build_col_map(tmpl_files, sheet_path, strings)
+
+    # 属性名の短縮キーで列を引く（前方一致）
+    def col(attr_substr):
+        for k, v in col_map.items():
+            if attr_substr in k:
+                return v
+        return None
+
+    def s_cell(row_num, column, value):
+        if not column or not value:
+            return ''
+        idx = get_or_add(str(value))
+        if idx is None:
+            return ''
+        return f'<c r="{column}{row_num}" t="s"><v>{idx}</v></c>'
+
+    def n_cell(row_num, column, value):
+        if not column or value in (None, ''):
+            return ''
+        try:
+            return f'<c r="{column}{row_num}"><v>{int(float(value))}</v></c>'
+        except (ValueError, TypeError):
+            return ''
+
+    rows_xml_parts = []
+    row_num = 7  # dataRow
+
+    # 列アドレスを事前解決
+    C_SKU       = col('出品者によって割り当てられる出品後変更不可')
+    C_PTYPE     = col('商品タイプ')
+    C_ACTION    = col('デフォルト')
+    C_LEVEL     = col('親子レベル')
+    C_PARENT    = col('親SKU')
+    C_VTHEME    = col('バリエーションテーマを明記')
+    C_NAME      = col('商品名')
+    C_BRAND     = col('ブランド名')
+    C_ID_TYPE   = col('商品IDの種類')
+    C_ID        = col_map.get('商品ID')
+    C_PART_NUM  = col('品番・型番')
+    C_MAKER     = col('メーカー名')
+    C_IMG_MAIN  = col('メイン画像のURL')
+    C_IMG_SUB1  = col('その他の画像のURL')
+    C_IMG_SUB2  = col_map.get('http://www.companyname.com/images/1250.other1.jpg')
+    C_IMG_SUB3  = col('other_product_image_locator_2')
+    C_IMG_SUB4  = col('商品の追加画像のURL')
+    C_DESC      = col('商品説明')
+    C_KW        = col('検索用キーワード')
+    C_FF        = col('フルフィルメントチャネルコード')
+    C_STOCK     = col('在庫数')
+    C_PRICE     = col('商品の販売価格 JPY')
+    C_ORIGIN    = col('原産国')
+
+    for g in groups:
+        brand = g.get('fields', {}).get('brandCustom') or g.get('fields', {}).get('brand', '')
+        product_name = g.get('name', '').strip()
+        fields = g.get('fields', {})
+        variants = g.get('variants', [])
+        origin = ORIGIN_MAP.get(fields.get('origin', '156'), '中国')
+
+        # バリエーションテーマ判定
+        has_color = any(v.get('color') for v in variants)
+        has_size  = any(v.get('size')  for v in variants)
+        if has_color and has_size:
+            vtheme = 'サイズ名/色名'
+        elif has_color:
+            vtheme = '色名'
+        elif has_size:
+            vtheme = 'サイズ名'
+        else:
+            vtheme = ''
+
+        needs_parent = len(variants) > 1 and vtheme
+        parent_sku = ''
+        if needs_parent:
+            first_sku = variants[0].get('sku', '')
+            if first_sku:
+                parent_sku = re.sub(r'-[^-]+$', '', first_sku) + '-PARENT'
+            else:
+                slug = re.sub(r'[^\w]', '-', product_name)[:20]
+                parent_sku = slug + '-PARENT'
+
+            # 親行
+            cells = [
+                s_cell(row_num, C_SKU,    parent_sku),
+                s_cell(row_num, C_PTYPE,  product_type),
+                s_cell(row_num, C_ACTION, 'フル更新'),
+                s_cell(row_num, C_LEVEL,  '親'),
+                s_cell(row_num, C_VTHEME, vtheme),
+                s_cell(row_num, C_NAME,   product_name),
+                s_cell(row_num, C_BRAND,  brand),
+                s_cell(row_num, C_MAKER,  brand),
+                s_cell(row_num, C_IMG_MAIN, fields.get('amzImg0', '')),
+                s_cell(row_num, C_IMG_SUB1, fields.get('amzImg1', '')),
+                s_cell(row_num, C_IMG_SUB2, fields.get('amzImg2', '')),
+                s_cell(row_num, C_IMG_SUB3, fields.get('amzImg3', '')),
+                s_cell(row_num, C_DESC,   fields.get('amzDesc', '')),
+                s_cell(row_num, C_KW,     fields.get('amzKeywords', '')),
+                s_cell(row_num, C_ORIGIN, origin),
+            ]
+            cells = sorted([c for c in cells if c],
+                           key=lambda x: _amz_col_sort_key(re.search(r'r="([A-Z]+)', x).group(1)))
+            rows_xml_parts.append(f'<row r="{row_num}">' + ''.join(cells) + '</row>')
+            row_num += 1
+
+        for v in variants:
+            sku = v.get('sku', '')
+            jan = v.get('jan', '')
+            color = v.get('color', '')
+            size  = v.get('size', '')
+            variant_name = product_name + ('　' + '　'.join(filter(None, [color, size])) if (color or size) else '')
+
+            cells = [
+                s_cell(row_num, C_SKU,      sku),
+                s_cell(row_num, C_PTYPE,    product_type),
+                s_cell(row_num, C_ACTION,   'フル更新'),
+                s_cell(row_num, C_LEVEL,    '子' if needs_parent else ''),
+                s_cell(row_num, C_PARENT,   parent_sku if needs_parent else ''),
+                s_cell(row_num, C_VTHEME,   vtheme if needs_parent else ''),
+                s_cell(row_num, C_NAME,     variant_name),
+                s_cell(row_num, C_BRAND,    brand),
+                s_cell(row_num, C_ID_TYPE,  'EAN' if jan else ''),
+                s_cell(row_num, C_ID,       jan),
+                s_cell(row_num, C_PART_NUM, sku),
+                s_cell(row_num, C_MAKER,    brand),
+                s_cell(row_num, C_IMG_MAIN, fields.get('amzImg0', '')),
+                s_cell(row_num, C_IMG_SUB1, fields.get('amzImg1', '')),
+                s_cell(row_num, C_IMG_SUB2, fields.get('amzImg2', '')),
+                s_cell(row_num, C_IMG_SUB3, fields.get('amzImg3', '')),
+                s_cell(row_num, C_IMG_SUB4, fields.get('amzImg4', '')),
+                s_cell(row_num, C_DESC,     fields.get('amzDesc', '')),
+                s_cell(row_num, C_KW,       fields.get('amzKeywords', '')),
+                s_cell(row_num, C_FF,       fields.get('amzFulfillment', 'DEFAULT')),
+                s_cell(row_num, C_ORIGIN,   origin),
+                n_cell(row_num, C_STOCK,    v.get('stock', '')),
+                n_cell(row_num, C_PRICE,    v.get('price', '')),
+            ]
+            cells = sorted([c for c in cells if c],
+                           key=lambda x: _amz_col_sort_key(re.search(r'r="([A-Z]+)', x).group(1)))
+            rows_xml_parts.append(f'<row r="{row_num}">' + ''.join(cells) + '</row>')
+            row_num += 1
+
+    new_rows_str = ''.join(rows_xml_parts)
+
+    # テンプレートシートのsheetDataを編集（row7以降を置換）
+    sheet_xml = tmpl_files[sheet_path].decode('utf-8')
+
+    def replace_sheet_data(m):
+        inner = m.group(1)
+        header_rows = re.findall(r'<row[^>]*r="[1-6]"[^>]*>.*?</row>', inner, re.DOTALL)
+        return '<sheetData>' + ''.join(header_rows) + new_rows_str + '</sheetData>'
+
+    sheet_fixed = re.sub(r'<sheetData>(.*?)</sheetData>', replace_sheet_data, sheet_xml, flags=re.DOTALL)
+
+    # sharedStrings 更新
+    total = ss_total + len(new_si_entries)
+    ss_fixed = re.sub(r'(count=")[^"]*(")', f'\\g<1>{total}\\2', ss_xml)
+    ss_fixed = re.sub(r'(uniqueCount=")[^"]*(")', f'\\g<1>{total}\\2', ss_fixed)
+    new_si_xml = ''.join(
+        f'<si><t xml:space="preserve">{escape_xml(t)}</t></si>'
+        for t in new_si_entries
+    )
+    ss_fixed = ss_fixed.replace('</sst>', new_si_xml + '</sst>')
+
+    result = io.BytesIO()
+    with zipfile.ZipFile(result, 'w', zipfile.ZIP_DEFLATED) as out_zip:
+        for name, data in tmpl_files.items():
+            if name == sheet_path:
+                out_zip.writestr(name, sheet_fixed.encode('utf-8'))
+            elif name == 'xl/sharedStrings.xml':
+                out_zip.writestr(name, ss_fixed.encode('utf-8'))
+            else:
+                out_zip.writestr(name, data)
+
+    return result.getvalue(), row_num - 7
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         pass
@@ -260,26 +530,57 @@ class Handler(BaseHTTPRequestHandler):
         self._cors()
         self.end_headers()
 
-    def do_POST(self):
-        if urlparse(self.path).path != '/generate':
-            self.send_response(404); self.end_headers(); return
+    def do_GET(self):
+        path = urlparse(self.path).path
+        if path in ('/', '/jan_registration_tool.html'):
+            html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                     'jan_registration_tool.html')
+            try:
+                with open(html_path, 'rb') as f:
+                    data = f.read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Content-Length', str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+            except FileNotFoundError:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(b'jan_registration_tool.html not found')
+        else:
+            self.send_response(404)
+            self.end_headers()
 
+    def do_POST(self):
+        path = urlparse(self.path).path
         length = int(self.headers.get('Content-Length', 0))
         body = self.rfile.read(length)
+
         try:
             payload = json.loads(body)
-            xlsx_bytes, count = generate_xlsx(payload)
             from datetime import date
-            fname = f'gjdb_product_upload_{date.today().strftime("%Y%m%d")}.xlsx'
+            ds = date.today().strftime('%Y%m%d')
+
+            if path == '/generate':
+                xlsx_bytes, count = generate_xlsx(payload)
+                fname = f'gjdb_product_upload_{ds}.xlsx'
+                ct = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            elif path.startswith('/amazon/'):
+                product_type = path.split('/')[-1].upper()
+                xlsx_bytes, count = generate_amazon_xlsx(payload, product_type)
+                fname = f'amazon_{product_type.lower()}_{ds}.xlsm'
+                ct = 'application/vnd.ms-excel.sheet.macroenabled.12'
+            else:
+                self.send_response(404); self.end_headers(); return
+
             self.send_response(200)
             self._cors()
-            self.send_header('Content-Type',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            self.send_header('Content-Type', ct)
             self.send_header('Content-Disposition', f'attachment; filename="{fname}"')
             self.send_header('Content-Length', str(len(xlsx_bytes)))
             self.end_headers()
             self.wfile.write(xlsx_bytes)
-            print(f'[OK] {count}件のExcelを生成', flush=True)
+            print(f'[OK] {count}件 ({path})', flush=True)
         except Exception as e:
             import traceback
             msg = traceback.format_exc().encode()
@@ -294,7 +595,7 @@ class Handler(BaseHTTPRequestHandler):
     def _cors(self):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
 
 
 if __name__ == '__main__':
