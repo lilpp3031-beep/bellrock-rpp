@@ -1,11 +1,14 @@
 import base64
 import json
+import locale
 import urllib.request
 import urllib.error
 import time
 import ssl
 import csv
 from typing import List, Dict, Any
+
+locale.setlocale(locale.LC_ALL, 'ja_JP.UTF-8')
 
 # macOSの証明書エラー回避用
 ssl._create_default_https_context = ssl._create_unverified_context

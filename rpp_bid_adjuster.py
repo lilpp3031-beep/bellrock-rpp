@@ -9,6 +9,7 @@ RPP広告入札自動調整スクリプト
 
 import asyncio
 import json
+import locale
 import sys
 import time
 import urllib.parse
@@ -18,6 +19,8 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+
+locale.setlocale(locale.LC_ALL, 'ja_JP.UTF-8')
 
 # ======================================================================
 # 設定

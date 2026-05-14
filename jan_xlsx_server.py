@@ -4,10 +4,12 @@ JAN登録ツール用 Excel生成サーバー (port 8082)
 HTMLツールからPOSTされたJSONを受け取り、テンプレートXMLを直接編集してXLSXを返す。
 openpyxlを一切使わず、テンプレートのXML構造・メタデータを完全保持。
 """
-import json, io, os, re, html, zipfile
+import json, io, locale, os, re, html, zipfile
 import xml.etree.ElementTree as ET
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse
+
+locale.setlocale(locale.LC_ALL, 'ja_JP.UTF-8')
 
 AMAZON_TEMPLATES = {
     'PLANTER': os.path.expanduser('~/Downloads/PLANTER.xlsm'),
